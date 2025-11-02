@@ -1,0 +1,78 @@
+.
+├── bunfig.toml
+├── bun.lock
+├── node_modules
+│   ├── prettier -> .bun/prettier@3.6.2/node_modules/prettier
+│   └── @types
+│       └── bun -> ../.bun/@types+bun@1.3.1+76fc6e1da2c33046/node_modules/@types/bun
+├── output.txt
+├── package.json
+├── src
+│   ├── apps
+│   │   ├── cli
+│   │   │   ├── package.json
+│   │   │   ├── src
+│   │   │   │   ├── commands
+│   │   │   │   │   ├── dev.ts
+│   │   │   │   │   ├── generate.ts
+│   │   │   │   │   └── migrate.ts
+│   │   │   │   └── index.ts
+│   │   │   └── tsconfig.json
+│   │   ├── core
+│   │   │   ├── node_modules
+│   │   │   │   ├── elysia -> ../../../../node_modules/.bun/elysia@1.4.13+37ac7a851b451fca/node_modules/elysia
+│   │   │   │   └── @elysiajs
+│   │   │   │       ├── cors -> ../../../../../node_modules/.bun/@elysiajs+cors@1.4.0+a785aff0a7969923/node_modules/@elysiajs/cors
+│   │   │   │       └── swagger -> ../../../../../node_modules/.bun/@elysiajs+swagger@1.3.1+6380d7034a80ec13/node_modules/@elysiajs/swagger
+│   │   │   ├── package.json
+│   │   │   ├── src
+│   │   │   │   ├── server.ts
+│   │   │   │   ├── templates
+│   │   │   │   │   └── controller_doctype_ts.txt
+│   │   │   │   ├── test
+│   │   │   │   │   ├── core
+│   │   │   │   │   └── utils
+│   │   │   │   │       └── file.test.ts
+│   │   │   │   └── utils
+│   │   │   │       ├── file.ts
+│   │   │   │       ├── template.ts
+│   │   │   │       └── types.ts
+│   │   │   └── tsconfig.json
+│   │   └── studio
+│   │       ├── next.config.js
+│   │       ├── node_modules
+│   │       │   ├── next -> ../../../../node_modules/.bun/next@16.0.1+2b5434204782a989/node_modules/next
+│   │       │   ├── react -> ../../../../node_modules/.bun/react@19.2.0/node_modules/react
+│   │       │   └── react-dom -> ../../../../node_modules/.bun/react-dom@19.2.0+2f44e903108183df/node_modules/react-dom
+│   │       ├── package.json
+│   │       ├── src
+│   │       │   ├── app
+│   │       │   │   ├── globals.css
+│   │       │   │   ├── layout.tsx
+│   │       │   │   └── page.tsx
+│   │       │   └── components
+│   │       └── tsconfig.json
+│   ├── index.ts
+│   └── packages
+│       ├── builder-api
+│       │   ├── client.ts
+│       │   ├── index.ts
+│       │   └── types.ts
+│       ├── db
+│       │   ├── client.ts
+│       │   ├── index.ts
+│       │   ├── migrate.ts
+│       │   └── prisma
+│       │       └── schema.prisma
+│       ├── index.ts
+│       ├── node_modules
+│       │   └── prisma -> ../../../node_modules/.bun/prisma@6.18.0/node_modules/prisma
+│       ├── package.json
+│       ├── shared
+│       │   ├── constants.ts
+│       │   ├── index.ts
+│       │   └── types.ts
+│       └── tsconfig.json
+└── tsconfig.base.json
+
+37 directories, 39 files

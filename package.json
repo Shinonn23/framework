@@ -1,0 +1,34 @@
+{
+    "name": "my-app",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+        "src/apps/*",
+        "src/packages"
+    ],
+    "scripts": {
+        "dev": "bun run --filter core dev & bun run --filter studio dev",
+        "dev:core": "bun run --filter core dev",
+        "dev:studio": "bun run --filter studio dev",
+        "dev:cli": "bun run --filter cli dev",
+        "build": "bun run --filter core build && bun run --filter studio build && bun run --filter cli build",
+        "build:core": "bun run --filter core build",
+        "build:studio": "bun run --filter studio build",
+        "build:cli": "bun run --filter cli build",
+        "cli": "bun run --filter cli start",
+        "generate": "bun run --filter cli generate",
+        "migrate": "bun run --filter cli migrate",
+        "db:push": "bun run --filter packages db:push",
+        "db:studio": "bun run --filter packages db:studio",
+        "db:generate": "bun run --filter packages db:generate",
+        "db:migrate": "bun run --filter packages db:migrate",
+        "clean": "rm -rf node_modules src/apps/*/node_modules src/packages/node_modules",
+        "typecheck": "bun run --filter core typecheck && bun run --filter studio typecheck && bun run --filter cli typecheck"
+    },
+    "dependencies": {
+        "prettier": "^3.6.2"
+    },
+    "devDependencies": {
+        "@types/bun": "latest"
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "packages",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "main": "./index.ts",
+    "types": "./index.ts",
+    "scripts": {
+        "db:push": "prisma db push",
+        "db:studio": "prisma studio",
+        "db:generate": "prisma generate",
+        "db:migrate": "prisma migrate dev",
+        "db:migrate:deploy": "prisma migrate deploy",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "prisma": "^6.18.0",
+        "zod": "^4.1.12"
+    },
+    "devDependencies": {}
+}

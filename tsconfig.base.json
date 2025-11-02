@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "lib": ["ESNext"],
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "emitDeclarationOnly": true,
+        "outDir": "dist",
+        "noEmit": false,
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "paths": {}
+    },
+    "exclude": ["node_modules", "dist", "build", ".next"]
+}

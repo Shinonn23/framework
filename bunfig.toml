@@ -1,0 +1,15 @@
+[install]
+# Bun workspace configuration
+exact = false
+production = false
+
+[install.scopes]
+# Configure private registries if needed
+
+[run]
+# Bun run configuration
+
+
+[test]
+# Test configuration
+preload = ["./test/setup.ts"]

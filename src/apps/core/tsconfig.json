@@ -1,0 +1,15 @@
+{
+    "extends": "../../../tsconfig.base.json",
+    "references": [{ "path": "./../../packages" }],
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": ".",
+        "paths": {
+            "@/*": ["./src/*"],
+            "@packages": ["./../../packages"],
+            "@packages/*": ["./../../packages/*"]
+        }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
+}

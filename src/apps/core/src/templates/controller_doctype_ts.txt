@@ -1,0 +1,87 @@
+// Copyright (c) {{YEAR}}, {{CONTRIBUTORS}}
+// License: {{LICENSE}}. See LICENSE
+
+class {{DoctypeName}} {
+    name: string;
+
+    constructor(name: string) {
+        this.name = name;
+    }
+
+    // Lifecycle hooks - Insert
+    async before_insert(): Promise<void> {
+        // Called before a document is prepared for insertion
+    }
+
+    async before_naming(): Promise<void> {
+        // Called before the name property of the document is set
+    }
+
+    async autoname(): Promise<void> {
+        // If defined, this method is used to set name property of the document
+    }
+
+    // Validation hooks
+    async before_validate(): Promise<void> {
+        // Called before validation, use this for auto setting missing values
+    }
+
+    async validate(): Promise<void> {
+        // Use this method to throw any validation errors and prevent the document from saving
+    }
+
+    // Save hooks
+    async before_save(): Promise<void> {
+        // Called before the document is saved
+    }
+
+    async db_insert(): Promise<void> {
+        // Inserts document in database, do not override unless working on virtual DocType
+    }
+
+    async after_insert(): Promise<void> {
+        // Called after the document is inserted into the database
+    }
+
+    async db_update(): Promise<void> {
+        // Updates document in database, do not override unless working on virtual DocType
+    }
+
+    async on_update(): Promise<void> {
+        // Called when values of an existing document is updated
+    }
+
+    // Submit hooks
+    async before_submit(): Promise<void> {
+        // Called before the document is submitted
+    }
+
+    async on_submit(): Promise<void> {
+        // Called when a document is submitted
+    }
+
+    // Cancel hooks
+    async before_cancel(): Promise<void> {
+        // Called before the document is cancelled
+    }
+
+    async on_cancel(): Promise<void> {
+        // Called when a submitted document is cancelled
+    }
+
+    // Update after submit hooks
+    async before_update_after_submit(): Promise<void> {
+        // Called when doc fields are updated on submitted document
+    }
+
+    async on_update_after_submit(): Promise<void> {
+        // Called when a submitted document values are updated
+    }
+
+    // General change hook
+    async on_change(): Promise<void> {
+        // Called when a document's values has been changed (also called when db_set is performed)
+    }
+}
+
+export default {{DoctypeName}};
