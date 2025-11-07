@@ -1,21 +1,15 @@
+#!/usr/bin/env bun
+
 import { Command } from "commander";
+import app from "./commands/app";
 
-import { generateCommand } from "./commands/generate.tsx";
-import { migrateCommand } from "./commands/migrate.tsx";
+const framework = new Command();
 
-const program = new Command();
+framework
+    .name("frw")
+    .description("CLI tool for Framework")
+    .version("0.0.0.1-beta-1762316947");
 
-program.name("myapp").description("CLI tool for My App").version("1.0.0");
+framework.addCommand(app);
 
-program
-    .command("generate")
-    .description("Generate code from templates")
-    .argument("[type]", "Type of code to generate")
-    .action(generateCommand);
-
-program
-    .command("migrate")
-    .description("Run database migrations")
-    .action(migrateCommand);
-
-program.parse();
+framework.parse();

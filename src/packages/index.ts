@@ -1,4 +1,4 @@
 // Main packages export
-export * from './shared';
+export * from './const';
 // export * from './db';
 export * from './builder-api';

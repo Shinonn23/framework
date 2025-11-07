@@ -1,26 +1,35 @@
 {
-    "name": "cli",
-    "version": "1.0.0",
+    "name": "framework-cli",
+    "version": "0.0.0.1-beta-1762316947",
     "private": true,
     "type": "module",
-    "bin": {
-        "myapp": "./src/index.ts"
-    },
     "scripts": {
         "dev": "bun run src/index.ts",
         "start": "bun run src/index.ts",
-        "build": "bun build src/index.ts --outdir dist --target bun --minify",
+        "build": "bun build src/index.ts --outfile ./../../../dist/frw.js --target bun --minify",
+        "build:compile": "bun build src/index.ts --compile --outfile ./../../../dist/frw",
         "typecheck": "tsc --noEmit",
         "generate": "bun run src/index.ts generate",
         "migrate": "bun run src/index.ts migrate"
     },
     "dependencies": {
+        "@types/ink-big-text": "^1.2.4",
+        "@types/ink-gradient": "^2.0.4",
+        "@types/ink-spinner": "^3.0.5",
+        "@types/ink-text-input": "^2.0.5",
+        "@types/react": "^19.2.2",
+        "commander": "^14.0.2",
+        "figlet": "^1.9.3",
         "ink": "^6.4.0",
+        "ink-big-text": "^2.0.0",
+        "ink-gradient": "^3.0.0",
         "ink-select-input": "^6.2.0",
         "ink-spinner": "^5.0.0",
+        "ink-text-input": "^6.0.0",
         "react": "^19.2.0"
     },
     "devDependencies": {
-        "@types/react": "^19.2.2"
+        "@types/node": "^24.10.0",
+        "react-devtools-core": "^7.0.1"
     }
 }

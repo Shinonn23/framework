@@ -1,6 +1,6 @@
 {
     "name": "packages",
-    "version": "1.0.0",
+    "version": "0.0.0.1-beta-1762316947",
     "private": true,
     "type": "module",
     "main": "./index.ts",
@@ -14,8 +14,14 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "fs-extra": "^11.3.2",
+        "mustache": "^4.2.0",
         "prisma": "^6.18.0",
+        "typescript": "^5.9.3",
         "zod": "^4.1.12"
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "@types/fs-extra": "^11.0.4",
+        "@types/mustache": "^4.2.6"
+    }
 }
