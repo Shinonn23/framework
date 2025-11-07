@@ -4,12 +4,62 @@ import path from "path";
 import { StateCallback } from "./type";
 
 /**
+ * Resolves the project path and name
+ * If path is just './' or '.', append the project name
+ */
+function resolveProjectPath(targetPath: string, projectName: string): string {
+    let resolvedPath = targetPath;
+
+    // Handle ~ for home directory
+    if (resolvedPath.startsWith("~")) {
+        const homeDir =
+            process.platform === "win32"
+                ? process.env.USERPROFILE
+                : process.env.HOME;
+
+        if (!homeDir) {
+            throw new Error("Unable to determine home directory");
+        }
+
+        resolvedPath = path.join(homeDir, resolvedPath.slice(1));
+    }
+
+    // Normalize the path
+    const normalized = path.normalize(resolvedPath);
+
+    // If path is just './' or '.', append project name
+    if (normalized === "." || normalized === "./") {
+        resolvedPath = `./${projectName}`;
+    }
+
+    // Resolve to absolute path
+    const fullPath = path.isAbsolute(resolvedPath)
+        ? path.resolve(resolvedPath)
+        : path.resolve(process.cwd(), resolvedPath);
+
+    return fullPath;
+}
+
+/**
+ * Checks if directory exists and returns the check result
+ */
+async function checkDirectoryExists(dirPath: string): Promise<boolean> {
+    try {
+        const stats = await fs.stat(dirPath);
+        return stats.isDirectory();
+    } catch {
+        return false;
+    }
+}
+
+/**
  * Initializes a new project by creating a directory, setting up a template, and updating the package.json file.
  *
  * @param targetPath - The target directory path where the project will be created. If null, the current working directory is used.
  * @param name - The name of the project. Defaults to "my-app" if not provided.
  * @param version - The version of the template to use. Defaults to "main" if not provided.
  * @param onStateChange - Optional callback function to track the current state of the initialization process.
+ * @param shouldOverwrite - Optional callback to ask user if they want to overwrite existing directory. Returns true to overwrite, false to cancel.
  *
  * @returns A promise that resolves to an object containing:
  * - `success`: A boolean indicating whether the project was created successfully.
@@ -31,6 +81,7 @@ async function init(
     name: string | null,
     version: string | null,
     onStateChange?: StateCallback,
+    shouldOverwrite?: () => Promise<boolean>,
 ) {
     try {
         // Validate input
@@ -41,9 +92,7 @@ async function init(
 
         // Use default values if not provided
         const projectPath =
-            targetPath === "" || targetPath === null
-                ? process.cwd()
-                : targetPath;
+            targetPath === "" || targetPath === null ? "./" : targetPath;
         const projectName = name === "" || name === null ? "my-app" : name;
         const templateVersion =
             version === "" || version === null ? "dev" : version;
@@ -54,25 +103,24 @@ async function init(
             message: "Creating project path...",
         });
 
-        // Resolve ~ to user's home directory and handle absolute/relative paths
-        let resolvedPath = projectPath;
-        if (resolvedPath.startsWith("~")) {
-            // Cross-platform home directory resolution
-            const homeDir = 
-                process.platform === "win32" 
-                    ? process.env.USERPROFILE 
-                    : process.env.HOME;
-            
-            if (!homeDir) {
-                throw new Error("Unable to determine home directory");
-            }
-            
-            resolvedPath = path.join(homeDir, resolvedPath.slice(1));
-        }
+        // Resolve the full path (handles ./ to append project name)
+        const fullPath = resolveProjectPath(projectPath, projectName);
 
-        const fullPath = path.isAbsolute(resolvedPath)
-            ? path.resolve(resolvedPath)
-            : path.resolve(process.cwd(), resolvedPath);
+        // Check if directory already exists
+        const dirExists = await checkDirectoryExists(fullPath);
+        if (dirExists) {
+            // Ask user if they want to overwrite
+            const overwrite = shouldOverwrite ? await shouldOverwrite() : false;
+
+            if (!overwrite) {
+                throw new Error(
+                    `Directory ${fullPath} already exists. Operation cancelled.`,
+                );
+            }
+
+            // Remove existing directory
+            await fs.remove(fullPath);
+        }
 
         // Clone the template from GitHub
         onStateChange?.({

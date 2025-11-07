@@ -8,8 +8,11 @@ const init = new Command()
     .description("Initialize a new application")
     .option("--name <name>", "Name of the application")
     .option("--path <path>", "Path to create the application")
+    .option("--app-version <app-version>", "Version of the application")
+    .option("--yes", "Skip confirmation prompt")
     .action(async (options: InitOptions) => {
-        render(<InitApp options={options} />);
+        const { waitUntilExit } = render(<InitApp options={options} />);
+        await waitUntilExit();
     });
 
 export default init;
