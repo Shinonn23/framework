@@ -1,15 +1,12 @@
-interface InitOptions {
-    name?: string;
-    path?: string;
-    architecture?: "monolith" | "microservices";
-}
+type InitState = {
+    step: string;
+    message: string;
+};
 
-interface InitAppProps {
-    options: InitOptions;
-}
+type StateCallback = (state: InitState) => void;
 
 export type {
-    // For init command
-    InitOptions,
-    InitAppProps
-}
+    // For init process state
+    InitState,
+    StateCallback,
+};

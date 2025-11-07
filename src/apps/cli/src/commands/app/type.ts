@@ -8,6 +8,7 @@ interface InitAppProps {
     options: InitOptions;
 }
 
+
 export type {
     // For init command
     InitOptions,

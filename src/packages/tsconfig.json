@@ -5,10 +5,12 @@
         "rootDir": ".",
         "composite": true,
         "declaration": true,
-        "declarationMap": true
+        "declarationMap": true,
+        "allowImportingTsExtensions": false
     },
     "include": [
-        "**/*"
+        "**/*.ts",
+        "**/*.tsx"
     ],
     "exclude": [
         "node_modules",

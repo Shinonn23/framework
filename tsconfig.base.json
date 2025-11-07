@@ -2,7 +2,9 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
-        "lib": ["ESNext"],
+        "lib": [
+            "ESNext"
+        ],
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,
         "emitDeclarationOnly": true,
@@ -20,5 +22,10 @@
         "isolatedModules": true,
         "paths": {}
     },
-    "exclude": ["node_modules", "dist", "build", ".next"]
+    "exclude": [
+        "node_modules",
+        "dist",
+        "build",
+        ".next"
+    ]
 }

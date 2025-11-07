@@ -1,9 +1,10 @@
 import { Box, Newline, Text } from "ink";
-import Gradient from "ink-gradient";
 import Spinner from "ink-spinner";
 import TextInput from "ink-text-input";
 import React, { useEffect, useState } from "react";
 import type { InitAppProps } from "../type";
+import type { InitState } from "@packages/app/type";
+import { init } from "@packages/app/init";
 
 const InitApp: React.FC<InitAppProps> = ({ options }: InitAppProps) => {
     const [step, setStep] = useState<
@@ -11,51 +12,50 @@ const InitApp: React.FC<InitAppProps> = ({ options }: InitAppProps) => {
     >(options.name ? (options.path ? "confirm" : "path") : "name");
     const [name, setName] = useState(options.name || "");
     const [path, setPath] = useState(options.path || "");
-    const [progress, setProgress] = useState(0);
-    const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [confirmValue, setConfirmValue] = useState("");
+    const [initState, setInitState] = useState<InitState | null>(null);
+    const [dots, setDots] = useState("");
 
     const defaultName = "my-app";
     const defaultPath = "./my-app";
 
-    const ALL_STEPS = [
-        { label: "Creating project structure..." },
-        { label: "Installing dependencies..." },
-        { label: "Setting up configuration..." },
-        { label: "Initializing git repository..." },
-    ];
+    // Animation for dots
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDots((prev) => {
+                if (prev === "...") return "";
+                return prev + ".";
+            });
+        }, 500);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         if (step === "installing") {
-            const stepInterval = setInterval(() => {
-                setCurrentStepIndex((prevIndex) => {
-                    // ถ้าถึง step สุดท้ายแล้ว ก็ให้หยุด interval
-                    if (prevIndex >= ALL_STEPS.length - 1) {
-                        clearInterval(stepInterval);
-                        return prevIndex;
-                    }
-                    return prevIndex + 1;
-                });
-            }, 500); // 500ms ต่อ 1 step
-
-            const progressInterval = setInterval(() => {
-                setProgress((prev) => {
-                    if (prev >= 100) {
-                        clearInterval(progressInterval);
-                        clearInterval(stepInterval); // สั่ง clear stepInterval ตรงนี้ด้วย
-                        setTimeout(() => process.exit(0), 1500);
-                        return 100;
-                    }
-                    return prev + 1;
-                });
-            }, 30);
-
-            return () => {
-                clearInterval(progressInterval);
-                clearInterval(stepInterval);
+            const runInit = async () => {
+                try {
+                    await init(
+                        path || defaultPath,
+                        name || defaultName,
+                        null,
+                        (state: InitState) => {
+                            setInitState(state);
+                        },
+                    );
+                } catch (error) {
+                    setInitState({
+                        step: "error",
+                        message:
+                            error instanceof Error
+                                ? error.message
+                                : "An unknown error occurred",
+                    });
+                }
             };
+
+            runInit();
         }
-    }, [step, ALL_STEPS.length]);
+    }, [step, path, name]);
 
     const handleNameSubmit = (value: string) => {
         setName(value || defaultName);
@@ -68,7 +68,7 @@ const InitApp: React.FC<InitAppProps> = ({ options }: InitAppProps) => {
     };
 
     const handleConfirm = (value: string) => {
-        setConfirmValue(""); // reset field
+        setConfirmValue("");
         if (value.toLowerCase() === "y" || value === "") {
             setStep("installing");
         } else {
@@ -77,89 +77,241 @@ const InitApp: React.FC<InitAppProps> = ({ options }: InitAppProps) => {
     };
 
     if (step === "installing") {
-        const filledBlocks = Math.floor(progress / 5);
-        const emptyBlocks = 20 - filledBlocks;
-        const progressBar = "█".repeat(filledBlocks) + "░".repeat(emptyBlocks);
+        const stepOrder = [
+            "validating",
+            "creating_path",
+            "downloading_template",
+            "updating_package",
+        ];
+        const currentStepIndex = stepOrder.indexOf(initState?.step || "");
 
+        // Completed screen
+        if (initState?.step === "completed") {
+            // Exit after showing completion message
+            setTimeout(() => {
+                process.exit(0);
+            }, 100);
+
+            return (
+                <Box flexDirection="column" padding={1}>
+                    <Box marginBottom={1}>
+                        <Text>
+                            <Text bold>▲</Text>
+                            <Text dimColor> </Text>
+                            <Text bold>Created</Text>
+                        </Text>
+                    </Box>
+
+                    <Box
+                        flexDirection="column"
+                        marginBottom={1}
+                        paddingLeft={2}
+                    >
+                        <Text dimColor>─────────────────────────</Text>
+                    </Box>
+
+                    <Box
+                        flexDirection="column"
+                        marginBottom={1}
+                        paddingLeft={2}
+                    >
+                        <Box>
+                            <Text dimColor>├─ </Text>
+                            <Text color="green">✓</Text>
+                            <Text dimColor> Created project</Text>
+                        </Box>
+                        <Box>
+                            <Text dimColor>├─ </Text>
+                            <Text color="green">✓</Text>
+                            <Text dimColor> Install dependencies</Text>
+                        </Box>
+                    </Box>
+
+                    <Box
+                        flexDirection="column"
+                        marginBottom={1}
+                        paddingLeft={2}
+                    >
+                        <Text dimColor>─────────────────────────</Text>
+                    </Box>
+
+                    <Box flexDirection="column" paddingLeft={2}>
+                        <Box marginBottom={1}>
+                            <Text>Application created at </Text>
+                            <Text bold>{path || defaultPath}</Text>
+                        </Box>
+
+                        <Box marginBottom={1}>
+                            <Text dimColor>Next steps:</Text>
+                        </Box>
+
+                        <Box flexDirection="column" paddingLeft={2}>
+                            <Box>
+                                <Text dimColor>1. </Text>
+                                <Text bold>cd {path || defaultPath}</Text>
+                            </Box>
+                            <Box>
+                                <Text dimColor>2. </Text>
+                                <Text bold>bun run dev</Text>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
+            );
+        }
+
+        // Error screen
+        if (initState?.step === "error") {
+            // Exit with error code after showing error message
+            setTimeout(() => {
+                process.exit(1);
+            }, 100);
+
+            return (
+                <Box flexDirection="column" padding={1}>
+                    <Box marginBottom={1}>
+                        <Text>
+                            <Text bold>▲</Text>
+                            <Text dimColor> </Text>
+                            <Text bold color="red">
+                                Error
+                            </Text>
+                        </Text>
+                    </Box>
+
+                    <Box flexDirection="column" paddingLeft={2}>
+                        <Text dimColor>─────────────────────────</Text>
+                    </Box>
+
+                    <Box flexDirection="column" marginTop={1} paddingLeft={2}>
+                        <Text color="red">× {initState.message}</Text>
+                    </Box>
+
+                    <Box marginTop={1} paddingLeft={2}>
+                        <Text dimColor>Please try again</Text>
+                    </Box>
+                </Box>
+            );
+        }
+
+        // Installing screen
         return (
             <Box flexDirection="column" padding={1}>
                 <Box marginBottom={1}>
-                    <Gradient name="rainbow">
-                        <Text>
-                            Creating application at {path || defaultPath}
-                        </Text>
-                    </Gradient>
-                </Box>
-
-                <Box marginBottom={1}>
                     <Text>
-                        <Text color="cyan">✓</Text>
-                        <Text> Creating application at </Text>
-                        <Text bold color="cyan">
-                            {path || defaultPath}
-                        </Text>
+                        <Text bold>▲</Text>
+                        <Text dimColor> </Text>
+                        <Text bold>Creating</Text>
+                        <Text dimColor>{dots}</Text>
                     </Text>
                 </Box>
 
-                <Box flexDirection="column" marginBottom={1}>
-                    {ALL_STEPS.map((step, idx) => {
-                        let status: "done" | "running" | "pending";
+                <Box flexDirection="column" marginBottom={1} paddingLeft={2}>
+                    <Text dimColor>─────────────────────────</Text>
+                </Box>
 
-                        if (progress === 100) {
-                            status = "done";
-                        } else if (idx < currentStepIndex) {
-                            status = "done";
-                        } else if (idx === currentStepIndex) {
-                            status = "running";
-                        } else {
-                            status = "pending";
-                        }
+                <Box flexDirection="column" paddingLeft={2}>
+                    <Box marginBottom={1}>
+                        <Text dimColor>Path: </Text>
+                        <Text bold>{path || defaultPath}</Text>
+                    </Box>
 
-                        if (status === "pending") {
-                            return null;
-                        }
-
-                        return (
-                            <Box key={step.label} marginBottom={0}>
-                                {status === "running" ? (
-                                    <>
-                                        <Text color="green">
-                                            {React.createElement(Spinner as any, { type: "dots" })}
-                                        </Text>
-                                        <Text> {step.label}</Text>
-                                    </>
-                                ) : (
-                                    // 'done' -> แสดง ✓
-                                    <Text>
-                                        <Text color="green">✓</Text>
-                                        <Text color="gray"> {step.label}</Text>
+                    {/* Validating */}
+                    {currentStepIndex >= 0 && (
+                        <Box>
+                            {initState?.step === "validating" ? (
+                                <>
+                                    <Text dimColor>├─ </Text>
+                                    <Text color="gray">
+                                        {React.createElement(Spinner as any, {
+                                            type: "dots",
+                                        })}
                                     </Text>
-                                )}
-                            </Box>
-                        );
-                    })}
-                </Box>
-                <Box marginBottom={1}>
-                    <Text color="gray">
-                        <Text>
-                            [{progressBar}] {progress}%
-                        </Text>
-                    </Text>
+                                    <Text> Validating input</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text dimColor>├─ </Text>
+                                    <Text color="green">✓</Text>
+                                    <Text dimColor> Validated input</Text>
+                                </>
+                            )}
+                        </Box>
+                    )}
+
+                    {/* Creating path */}
+                    {currentStepIndex >= 1 && (
+                        <Box>
+                            {initState?.step === "creating_path" ? (
+                                <>
+                                    <Text dimColor>├─ </Text>
+                                    <Text color="gray">
+                                        {React.createElement(Spinner as any, {
+                                            type: "dots",
+                                        })}
+                                    </Text>
+                                    <Text> Creating project path</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text dimColor>├─ </Text>
+                                    <Text color="green">✓</Text>
+                                    <Text dimColor> Created project path</Text>
+                                </>
+                            )}
+                        </Box>
+                    )}
+
+                    {/* Downloading template */}
+                    {currentStepIndex >= 2 && (
+                        <Box>
+                            {initState?.step === "downloading_template" ? (
+                                <>
+                                    <Text dimColor>├─ </Text>
+                                    <Text color="gray">
+                                        {React.createElement(Spinner as any, {
+                                            type: "dots",
+                                        })}
+                                    </Text>
+                                    <Text> Downloading template</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text dimColor>├─ </Text>
+                                    <Text color="green">✓</Text>
+                                    <Text dimColor> Downloaded template</Text>
+                                </>
+                            )}
+                        </Box>
+                    )}
+
+                    {/* Updating package */}
+                    {currentStepIndex >= 3 && (
+                        <Box>
+                            {initState?.step === "updating_package" ? (
+                                <>
+                                    <Text dimColor>└─ </Text>
+                                    <Text color="gray">
+                                        {React.createElement(Spinner as any, {
+                                            type: "dots",
+                                        })}
+                                    </Text>
+                                    <Text> Updating package.json</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text dimColor>└─ </Text>
+                                    <Text color="green">✓</Text>
+                                    <Text dimColor> Updated package.json</Text>
+                                </>
+                            )}
+                        </Box>
+                    )}
                 </Box>
 
-                {progress === 100 && (
-                    <Box flexDirection="column" marginTop={1}>
-                        <Text color="green" bold>
-                            ✓ Application created successfully!
-                        </Text>
-                        <Newline />
-                        <Text color="cyan" bold>
-                            Next steps:
-                        </Text>
-                        <Text color="gray"> cd {path || defaultPath}</Text>
-                        <Text color="gray"> npm run dev</Text>
-                        <Newline />
-                        <Text dimColor>Happy coding! 🚀</Text>
+                {initState?.message && (
+                    <Box marginTop={1} paddingLeft={2}>
+                        <Text dimColor>{initState.message}</Text>
                     </Box>
                 )}
             </Box>
@@ -170,49 +322,34 @@ const InitApp: React.FC<InitAppProps> = ({ options }: InitAppProps) => {
         return (
             <Box flexDirection="column" padding={1}>
                 <Box marginBottom={1}>
-                    <Gradient name="passion">
-                        <Text bold>⚡ Ready to create your app</Text>
-                    </Gradient>
-                </Box>
-
-                <Box
-                    flexDirection="column"
-                    marginBottom={1}
-                    paddingLeft={2}
-                    borderStyle="round"
-                    borderColor="gray"
-                    padding={1}
-                >
                     <Text>
-                        <Text color="gray">Name: </Text>
-                        <Text bold color="cyan">
-                            {name || defaultName}
-                        </Text>
-                    </Text>
-                    <Text>
-                        <Text color="gray">Path: </Text>
-                        <Text bold color="cyan">
-                            {path || defaultPath}
-                        </Text>
-                    </Text>
-                    <Text>
-                        <Text color="gray">Template: </Text>
-                        <Text bold color="magenta">
-                            Next.js + TypeScript
-                        </Text>
-                    </Text>
-                    <Text>
-                        <Text color="gray">Manager: </Text>
-                        <Text bold color="yellow">
-                            npm
-                        </Text>
+                        <Text bold>▲</Text>
+                        <Text dimColor> </Text>
+                        <Text bold>Confirm</Text>
                     </Text>
                 </Box>
 
-                <Box>
-                    <Text color="green">? </Text>
-                    <Text>Continue? </Text>
-                    <Text color="gray">(Y/n) </Text>
+                <Box flexDirection="column" paddingLeft={2}>
+                    <Text dimColor>─────────────────────────</Text>
+                </Box>
+
+                <Box flexDirection="column" marginTop={1} paddingLeft={2}>
+                    <Box>
+                        <Text dimColor>Name </Text>
+                        <Text bold>{name || defaultName}</Text>
+                    </Box>
+                    <Box>
+                        <Text dimColor>Path </Text>
+                        <Text bold>{path || defaultPath}</Text>
+                    </Box>
+                </Box>
+
+                <Box marginTop={1} paddingLeft={2}>
+                    <Text dimColor>─────────────────────────</Text>
+                </Box>
+
+                <Box marginTop={1} paddingLeft={2}>
+                    <Text dimColor>Continue? (Y/n) </Text>
                     <TextInput
                         value={confirmValue}
                         onChange={setConfirmValue}
@@ -227,27 +364,34 @@ const InitApp: React.FC<InitAppProps> = ({ options }: InitAppProps) => {
         return (
             <Box flexDirection="column" padding={1}>
                 <Box marginBottom={1}>
-                    <Gradient name="cristal">
-                        <Text bold>✨ Initialize New Application</Text>
-                    </Gradient>
-                </Box>
-
-                <Box marginBottom={1}>
-                    <Text color="green">✓ </Text>
-                    <Text color="gray">Application name: </Text>
-                    <Text bold color="cyan">
-                        {name}
+                    <Text>
+                        <Text bold>▲</Text>
+                        <Text dimColor> </Text>
+                        <Text bold>Initialize</Text>
                     </Text>
                 </Box>
 
-                <Box flexDirection="column">
-                    <Box>
-                        <Text color="cyan">? </Text>
-                        <Text>Where to create? </Text>
-                        <Text color="gray">(default: {defaultPath})</Text>
+                <Box flexDirection="column" paddingLeft={2}>
+                    <Text dimColor>─────────────────────────</Text>
+                </Box>
+
+                <Box marginTop={1} paddingLeft={2}>
+                    <Text color="green">✓ </Text>
+                    <Text dimColor>Name </Text>
+                    <Text bold>{name}</Text>
+                </Box>
+
+                <Box marginTop={1} paddingLeft={2}>
+                    <Text dimColor>─────────────────────────</Text>
+                </Box>
+
+                <Box flexDirection="column" marginTop={1} paddingLeft={2}>
+                    <Box marginBottom={1}>
+                        <Text dimColor>Where to create? </Text>
+                        <Text dimColor>(default: {defaultPath})</Text>
                     </Box>
-                    <Box paddingLeft={2}>
-                        <Text color="gray">→ </Text>
+                    <Box>
+                        <Text dimColor>→ </Text>
                         <TextInput
                             value={path}
                             onChange={setPath}
@@ -263,19 +407,24 @@ const InitApp: React.FC<InitAppProps> = ({ options }: InitAppProps) => {
     return (
         <Box flexDirection="column" padding={1}>
             <Box marginBottom={1}>
-                <Gradient name="morning">
-                    <Text bold>✨ Initialize New Application</Text>
-                </Gradient>
+                <Text>
+                    <Text bold>▲</Text>
+                    <Text dimColor> </Text>
+                    <Text bold>Initialize</Text>
+                </Text>
             </Box>
 
-            <Box flexDirection="column">
-                <Box>
-                    <Text color="cyan">? </Text>
-                    <Text>Application name? </Text>
-                    <Text color="gray">(default: {defaultName})</Text>
+            <Box flexDirection="column" paddingLeft={2}>
+                <Text dimColor>─────────────────────────</Text>
+            </Box>
+
+            <Box flexDirection="column" marginTop={1} paddingLeft={2}>
+                <Box marginBottom={1}>
+                    <Text dimColor>Application name? </Text>
+                    <Text dimColor>(default: {defaultName})</Text>
                 </Box>
-                <Box paddingLeft={2}>
-                    <Text color="gray">→ </Text>
+                <Box>
+                    <Text dimColor>→ </Text>
                     <TextInput
                         value={name}
                         onChange={setName}
