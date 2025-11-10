@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { InitAppProps } from "../type";
 import type { InitState } from "@packages/app/type";
-import { init } from "@packages/app/init";
+import { initNewProject } from "@packages/app/init";
 import {
     VersionInputScreen,
     type VersionOption,
@@ -89,7 +89,7 @@ const InitApp: React.FC<InitAppProps> = ({ options }) => {
             await new Promise((resolve) => setTimeout(resolve, 0));
 
             try {
-                await init(
+                await initNewProject(
                     path || DEFAULT_PATH,
                     name || DEFAULT_NAME,
                     version || "dev",

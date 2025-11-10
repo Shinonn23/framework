@@ -14,14 +14,15 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@prisma/client": "^6.19.0",
         "fs-extra": "^11.3.2",
         "mustache": "^4.2.0",
-        "prisma": "^6.18.0",
         "typescript": "^5.9.3",
         "zod": "^4.1.12"
     },
     "devDependencies": {
         "@types/fs-extra": "^11.0.4",
-        "@types/mustache": "^4.2.6"
+        "@types/mustache": "^4.2.6",
+        "prisma": "^6.19.0"
     }
 }

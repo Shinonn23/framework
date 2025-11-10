@@ -7,7 +7,7 @@ import {
     mock,
     spyOn,
 } from "bun:test";
-import { init } from "../app/init";
+import { initNewProject } from "../app/init";
 import fs from "fs-extra";
 import path from "path";
 import * as childProcess from "child_process";
@@ -51,7 +51,7 @@ describe("init function", () => {
             });
 
             try {
-                const result = await init(
+                const result = await initNewProject(
                     "./",
                     testProjectName,
                     "dev",
@@ -72,7 +72,7 @@ describe("init function", () => {
             const stateChanges: Array<{ step: string; message: string }> = [];
 
             try {
-                await init(".", testProjectName, "dev", (state) =>
+                await initNewProject(".", testProjectName, "dev", (state) =>
                     stateChanges.push(state),
                 );
             } catch (error) {
@@ -89,7 +89,7 @@ describe("init function", () => {
             const stateChanges: Array<{ step: string; message: string }> = [];
 
             try {
-                await init(testDir, null, "dev", (state) =>
+                await initNewProject(testDir, null, "dev", (state) =>
                     stateChanges.push(state),
                 );
             } catch (error) {
@@ -104,7 +104,7 @@ describe("init function", () => {
             const stateChanges: Array<{ step: string; message: string }> = [];
 
             try {
-                await init(null, testProjectName, "dev", (state) =>
+                await initNewProject(null, testProjectName, "dev", (state) =>
                     stateChanges.push(state),
                 );
             } catch (error) {
@@ -119,7 +119,7 @@ describe("init function", () => {
             const stateChanges: Array<{ step: string; message: string }> = [];
 
             try {
-                await init(testDir, testProjectName, null, (state) =>
+                await initNewProject(testDir, testProjectName, null, (state) =>
                     stateChanges.push(state),
                 );
             } catch (error) {
@@ -145,7 +145,7 @@ describe("init function", () => {
             };
 
             try {
-                await init(
+                await initNewProject(
                     testProjectPath,
                     testProjectName,
                     "dev",
@@ -171,7 +171,7 @@ describe("init function", () => {
             const shouldOverwrite = async () => true;
 
             try {
-                await init(
+                await initNewProject(
                     testProjectPath,
                     testProjectName,
                     "dev",
@@ -193,8 +193,11 @@ describe("init function", () => {
             const stateChanges: Array<{ step: string; message: string }> = [];
 
             try {
-                await init(testProjectPath, testProjectName, "dev", (state) =>
-                    stateChanges.push(state),
+                await initNewProject(
+                    testProjectPath,
+                    testProjectName,
+                    "dev",
+                    (state) => stateChanges.push(state),
                 );
             } catch (error) {
                 // Check that state changes were called in order
@@ -209,7 +212,7 @@ describe("init function", () => {
 
             try {
                 // Use invalid path to force error
-                await init(
+                await initNewProject(
                     "/invalid/path/that/cannot/be/created",
                     testProjectName,
                     "dev",
@@ -228,8 +231,11 @@ describe("init function", () => {
             const stateChanges: Array<{ step: string; message: string }> = [];
 
             try {
-                await init("~/test-project", testProjectName, "dev", (state) =>
-                    stateChanges.push(state),
+                await initNewProject(
+                    "~/test-project",
+                    testProjectName,
+                    "dev",
+                    (state) => stateChanges.push(state),
                 );
             } catch (error) {
                 // Should attempt to create in home directory
@@ -251,7 +257,7 @@ describe("init function", () => {
             });
 
             try {
-                const result = await init(
+                await initNewProject(
                     testProjectPath,
                     testProjectName,
                     "1.0.0",
@@ -276,8 +282,8 @@ describe("init function", () => {
 
             const shouldOverwrite = async () => false;
 
-            await expect(
-                init(
+            expect(
+                initNewProject(
                     testProjectPath,
                     testProjectName,
                     "dev",
@@ -291,7 +297,7 @@ describe("init function", () => {
             const stateChanges: Array<{ step: string; message: string }> = [];
 
             try {
-                await init(
+                await initNewProject(
                     testProjectPath,
                     testProjectName,
                     "invalid-version",

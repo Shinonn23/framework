@@ -2,55 +2,10 @@ import fs from "fs-extra";
 import { execSync } from "child_process";
 import path from "path";
 import { StateCallback } from "./type";
-
-/**
- * Resolves the project path and name
- * If path is just './' or '.', append the project name
- */
-function resolveProjectPath(targetPath: string, projectName: string): string {
-    let resolvedPath = targetPath;
-
-    // Handle ~ for home directory
-    if (resolvedPath.startsWith("~")) {
-        const homeDir =
-            process.platform === "win32"
-                ? process.env.USERPROFILE
-                : process.env.HOME;
-
-        if (!homeDir) {
-            throw new Error("Unable to determine home directory");
-        }
-
-        resolvedPath = path.join(homeDir, resolvedPath.slice(1));
-    }
-
-    // Normalize the path
-    const normalized = path.normalize(resolvedPath);
-
-    // If path is just './' or '.', append project name
-    if (normalized === "." || normalized === "./") {
-        resolvedPath = `./${projectName}`;
-    }
-
-    // Resolve to absolute path
-    const fullPath = path.isAbsolute(resolvedPath)
-        ? path.resolve(resolvedPath)
-        : path.resolve(process.cwd(), resolvedPath);
-
-    return fullPath;
-}
-
-/**
- * Checks if directory exists and returns the check result
- */
-async function checkDirectoryExists(dirPath: string): Promise<boolean> {
-    try {
-        const stats = await fs.stat(dirPath);
-        return stats.isDirectory();
-    } catch {
-        return false;
-    }
-}
+import {
+    resolveProjectPath,
+    checkDirectoryExists,
+} from "../utils";
 
 /**
  * Initializes a new project by creating a directory, setting up a template, and updating the package.json file.
@@ -76,7 +31,8 @@ async function checkDirectoryExists(dirPath: string): Promise<boolean> {
  * console.log(result);
  * ```
  */
-async function init(
+
+async function initNewProject(
     targetPath: string | null,
     name: string | null,
     version: string | null,
@@ -193,4 +149,4 @@ async function init(
     }
 }
 
-export { init };
+export { initNewProject };
