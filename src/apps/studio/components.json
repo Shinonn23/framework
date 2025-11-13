@@ -5,7 +5,7 @@
     "tsx": true,
     "tailwind": {
         "config": "",
-        "css": "src/app/globals.css",
+        "css": "src/styles/globals.css",
         "baseColor": "neutral",
         "cssVariables": true,
         "prefix": ""
@@ -18,5 +18,7 @@
         "lib": "@/lib",
         "hooks": "@/hooks"
     },
-    "registries": {}
+    "registries": {
+        "@acme": "https://registry.acme.com/{name}.json"
+    }
 }

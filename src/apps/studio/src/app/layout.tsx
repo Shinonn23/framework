@@ -1,10 +1,9 @@
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
-import {
-    SidebarProvider,
-} from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { GeistMono } from "geist/font/mono";
 import type { Metadata } from "next";
-import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import "@/styles/globals.css";
 
 export const metadata: Metadata = {
     title: "My App Studio",
@@ -17,18 +16,29 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en" className={GeistMono.className}>
+        <html
+            lang="en"
+            className={GeistMono.className}
+            suppressHydrationWarning
+        >
             <body>
-                <SidebarProvider
-                    style={
-                        {
-                            "--sidebar-width": "350px",
-                        } as React.CSSProperties
-                    }
-                    defaultOpen={false}
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
                 >
-                    <AppSidebar>{children}</AppSidebar>
-                </SidebarProvider>
+                    <SidebarProvider
+                        style={
+                            {
+                                "--sidebar-width": "350px",
+                            } as React.CSSProperties
+                        }
+                        defaultOpen={false}
+                    >
+                        <AppSidebar>{children}</AppSidebar>
+                    </SidebarProvider>{" "}
+                </ThemeProvider>
             </body>
         </html>
     );

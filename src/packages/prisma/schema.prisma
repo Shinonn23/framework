@@ -14,8 +14,17 @@ datasource db {
     url      = "file:./database/main.db"
 }
 
+model User {
+    id        Int      @id @default(autoincrement())
+    username  String   @unique
+    email     String   @unique
+    password  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
 model Project {
-    id        String   @id @default(uuid())
+    id        Int      @id @default(autoincrement())
     name      String   @unique
     owner     String
     path      String   @unique
@@ -24,11 +33,9 @@ model Project {
     updatedAt DateTime @updatedAt
 }
 
-model User {
-    id        String   @id @default(uuid())
-    username  String   @unique
-    email     String   @unique
-    password  String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Setting {
+    id              Int   @id @default(autoincrement())
+    user_setting    Json?
+    project_setting Json?
+    system_setting  Json?
 }

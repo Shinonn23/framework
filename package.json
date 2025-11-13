@@ -7,7 +7,7 @@
         "src/packages"
     ],
     "scripts": {
-        "dev": "bun run --filter core dev & bun run --filter studio dev",
+        "dev": "bun run --filter core dev && bun run --filter studio dev",
         "dev:core": "bun run --filter core dev",
         "dev:studio": "bun run --filter studio dev",
         "dev:cli": "bun run --filter cli dev",
@@ -29,6 +29,7 @@
         "prettier": "^3.6.2"
     },
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "latest",
+        "shadcn": "^3.5.0"
     }
 }

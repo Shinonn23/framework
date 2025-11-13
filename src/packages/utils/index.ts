@@ -14,15 +14,6 @@ type AnyObject = { [k: string]: any };
  * @template T - The type of the input value
  * @param value - The value to process (can be a primitive, array, or object)
  * @returns A new value of type T with empty strings replaced by null
- *
- * @example
- * ```typescript
- * convertEmptyStringsToNull({ name: "John", title: "  " })
- * // Returns: { name: "John", title: null }
- *
- * convertEmptyStringsToNull(["hello", "", "  ", "world"])
- * // Returns: ["hello", null, null, "world"]
- * ```
  */
 function convertEmptyStringsToNull<T>(value: T): T {
     // If it's a string and contains only whitespace → return null
@@ -84,21 +75,6 @@ function convertEmptyStringsToNull<T>(value: T): T {
  * @returns The resolved absolute path
  *
  * @throws {Error} When home directory cannot be determined (when using `~` prefix)
- *
- * @example
- * ```typescript
- * // Expands home directory
- * resolveProjectPath("~/projects/myapp", "myapp");
- * // Returns: "/home/user/projects/myapp"
- *
- * // Appends project name for current directory
- * resolveProjectPath(".", "myapp");
- * // Returns: "/current/working/directory/myapp"
- *
- * // Resolves relative paths
- * resolveProjectPath("../projects", "myapp");
- * // Returns: "/parent/directory/projects"
- * ```
  */
 
 function resolveProjectPath(targetPath: string, projectName: string): string {

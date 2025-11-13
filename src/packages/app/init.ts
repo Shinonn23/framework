@@ -3,6 +3,7 @@ import { execSync } from "child_process";
 import path from "path";
 import { StateCallback } from "./type";
 import {
+    convertEmptyStringsToNull,
     resolveProjectPath,
     checkDirectoryExists,
 } from "../utils";
@@ -46,12 +47,15 @@ async function initNewProject(
             message: "Validating input...",
         });
 
+        // Convert empty strings to null
+        targetPath = convertEmptyStringsToNull(targetPath);
+        name = convertEmptyStringsToNull(name);
+        version = convertEmptyStringsToNull(version);
+
         // Use default values if not provided
-        const projectPath =
-            targetPath === "" || targetPath === null ? "./" : targetPath;
-        const projectName = name === "" || name === null ? "my-app" : name;
-        const templateVersion =
-            version === "" || version === null ? "dev" : version;
+        const projectPath = targetPath === null ? "./" : targetPath;
+        const projectName = name === null ? "my-app" : name;
+        const templateVersion = version === null ? "dev" : version;
 
         // Create the project path
         onStateChange?.({

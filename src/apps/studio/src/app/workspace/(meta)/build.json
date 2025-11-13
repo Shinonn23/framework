@@ -1,0 +1,310 @@
+{
+    "version": "2.0",
+    "grid": {
+        "columns": 12,
+        "gap": 6
+    },
+	"public": true,
+    "components": [
+        {
+            "id": "get-started-header-2",
+            "type": "header",
+            "layout": { "x": 0, "y": 0, "w": 12, "h": 1 },
+            "props": {
+                "title": "Welcome to Your App Builder"
+            }
+        },
+        {
+            "id": "get-started-header",
+            "type": "text",
+            "layout": { "x": 0, "y": 1, "w": 12, "h": 1 },
+            "props": {
+                "content": "Get started",
+                "variant": "section-header",
+                "helpIcon": true,
+                "helpContent": "Quick access to create common DocTypes, scripts, and system configurations to begin building your application."
+            }
+        },
+        {
+            "id": "doctype",
+            "type": "shortcut",
+            "layout": { "x": 0, "y": 2, "w": 3, "h": 1 },
+            "props": {
+                "label": "DocType",
+                "icon": "FileText",
+                "href": "/workspace/doctype"
+            }
+        },
+        {
+            "id": "customize-form",
+            "type": "shortcut",
+            "layout": { "x": 3, "y": 2, "w": 3, "h": 1 },
+            "props": {
+                "label": "Customize Form",
+                "icon": "Paintbrush",
+                "href": "/workspace/customize-form"
+            }
+        },
+        {
+            "id": "report",
+            "type": "shortcut",
+            "layout": { "x": 6, "y": 2, "w": 3, "h": 1 },
+            "props": {
+                "label": "Report",
+                "icon": "BarChart3",
+                "href": "/workspace/report"
+            }
+        },
+        {
+            "id": "client-script",
+            "type": "shortcut",
+            "layout": { "x": 9, "y": 2, "w": 3, "h": 1 },
+            "props": {
+                "label": "Client Script",
+                "icon": "Code",
+                "href": "/workspace/client-script"
+            }
+        },
+        {
+            "id": "server-script",
+            "type": "shortcut",
+            "layout": { "x": 0, "y": 3, "w": 3, "h": 1 },
+            "props": {
+                "label": "Server Script",
+                "icon": "Server",
+                "href": "/workspace/server-script"
+            }
+        },
+        {
+            "id": "print-format",
+            "type": "shortcut",
+            "layout": { "x": 3, "y": 3, "w": 3, "h": 1 },
+            "props": {
+                "label": "Print Format Builder",
+                "icon": "Printer",
+                "href": "/workspace/print-format"
+            }
+        },
+        {
+            "id": "system-settings",
+            "type": "shortcut",
+            "layout": { "x": 6, "y": 3, "w": 3, "h": 1 },
+            "props": {
+                "label": "System Settings",
+                "icon": "Settings",
+                "href": "/workspace/system-settings"
+            }
+        },
+        {
+            "id": "spacer-1",
+            "type": "spacer",
+            "layout": { "x": 0, "y": 4, "w": 12, "h": 1 },
+            "props": {
+                "height": 20
+            }
+        },
+        {
+            "id": "components-header",
+            "type": "text",
+            "layout": { "x": 0, "y": 5, "w": 12, "h": 1 },
+            "props": {
+                "content": "Components to build your app",
+                "variant": "section-header",
+                "helpIcon": true,
+                "helpContent": "These are the building blocks of your application. Use Models for data structure, Views for displaying data, Customization for UI tweaks, and Scripting for business logic."
+            }
+        },
+        {
+            "id": "models-section",
+            "type": "quicklist",
+            "layout": { "x": 0, "y": 6, "w": 4, "h": 1 },
+            "props": {
+                "title": "Models",
+                "description": "Define your data structure using DocTypes (tables/forms) and create approval Workflows for your business processes.",
+                "items": [
+                    {
+                        "label": "DocType",
+                        "icon": "FileText",
+                        "href": "/workspace/models/doctype"
+                    },
+                    {
+                        "label": "Workflow",
+                        "icon": "Workflow",
+                        "href": "/workspace/models/workflow"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "views-section",
+            "type": "quicklist",
+            "layout": { "x": 4, "y": 6, "w": 4, "h": 1 },
+            "props": {
+                "title": "Views",
+                "description": "Create Reports to analyze data, design Print Formats for documents, build Dashboards for insights, and configure Workspaces for navigation.",
+                "items": [
+                    {
+                        "label": "Report",
+                        "icon": "BarChart3",
+                        "href": "/workspace/views/report"
+                    },
+                    {
+                        "label": "Print Format",
+                        "icon": "Printer",
+                        "href": "/workspace/views/print-format"
+                    },
+                    {
+                        "label": "Workspace",
+                        "icon": "LayoutDashboard",
+                        "href": "/workspace/views/workspace"
+                    },
+                    {
+                        "label": "Dashboard",
+                        "icon": "LineChart",
+                        "href": "/workspace/views/dashboard"
+                    },
+                    {
+                        "label": "Dashboard Chart",
+                        "icon": "PieChart",
+                        "href": "/workspace/views/dashboard-chart"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "customization-section",
+            "type": "quicklist",
+            "layout": { "x": 8, "y": 6, "w": 4, "h": 1 },
+            "props": {
+                "title": "Customization",
+                "description": "Customize forms, add custom fields to existing DocTypes, translate your app, and configure the navigation bar.",
+                "items": [
+                    {
+                        "label": "Customize Form",
+                        "icon": "Paintbrush",
+                        "href": "/workspace/customization/customize-form"
+                    },
+                    {
+                        "label": "Custom Field",
+                        "icon": "Edit3",
+                        "href": "/workspace/customization/custom-field"
+                    },
+                    {
+                        "label": "Custom Translation",
+                        "icon": "Languages",
+                        "href": "/workspace/customization/custom-translation"
+                    },
+                    {
+                        "label": "Navbar Settings",
+                        "icon": "Menu",
+                        "href": "/workspace/customization/navbar-settings"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "scripting-section",
+            "type": "quicklist",
+            "layout": { "x": 0, "y": 7, "w": 4, "h": 1 },
+            "props": {
+                "title": "Scripting",
+                "description": "Write Server Scripts for backend logic, Client Scripts for frontend interactions, and schedule automated jobs.",
+                "items": [
+                    {
+                        "label": "Server Script",
+                        "icon": "Server",
+                        "href": "/workspace/scripting/server-script"
+                    },
+                    {
+                        "label": "Client Script",
+                        "icon": "Code",
+                        "href": "/workspace/scripting/client-script"
+                    },
+                    {
+                        "label": "Scheduled Job Type",
+                        "icon": "Clock",
+                        "href": "/workspace/scripting/scheduled-job-type"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "modules-section",
+            "type": "quicklist",
+            "layout": { "x": 4, "y": 7, "w": 4, "h": 1 },
+            "props": {
+                "title": "Modules",
+                "description": "Organize your app into modules and create onboarding experiences for new users.",
+                "items": [
+                    {
+                        "label": "Module Def",
+                        "icon": "Package",
+                        "href": "/workspace/modules/module-def"
+                    },
+                    {
+                        "label": "Module Onboarding",
+                        "icon": "Target",
+                        "href": "/workspace/modules/module-onboarding"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "packages-section",
+            "type": "quicklist",
+            "layout": { "x": 8, "y": 7, "w": 4, "h": 1 },
+            "props": {
+                "title": "Packages",
+                "description": "Export and import configurations as packages to share or deploy across environments.",
+                "items": [
+                    {
+                        "label": "Package",
+                        "icon": "Package",
+                        "href": "/workspace/packages/package"
+                    },
+                    {
+                        "label": "Package Import",
+                        "icon": "Download",
+                        "href": "/workspace/packages/package-import"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "system-logs-section",
+            "type": "quicklist",
+            "layout": { "x": 0, "y": 8, "w": 12, "h": 1 },
+            "props": {
+                "title": "System Logs",
+                "description": "Monitor background jobs, scheduled tasks, errors, email communications, and user activity for debugging and auditing.",
+                "items": [
+                    {
+                        "label": "Background Jobs",
+                        "icon": "Settings",
+                        "href": "/workspace/logs/background-jobs"
+                    },
+                    {
+                        "label": "Scheduled Jobs Logs",
+                        "icon": "Calendar",
+                        "href": "/workspace/logs/scheduled-jobs"
+                    },
+                    {
+                        "label": "Error Logs",
+                        "icon": "AlertCircle",
+                        "href": "/workspace/logs/error-logs"
+                    },
+                    {
+                        "label": "Communication Logs",
+                        "icon": "MessageSquare",
+                        "href": "/workspace/logs/communication-logs"
+                    },
+                    {
+                        "label": "Activity Log",
+                        "icon": "Activity",
+                        "href": "/workspace/logs/activity-log"
+                    }
+                ]
+            }
+        }
+    ]
+}
