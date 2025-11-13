@@ -1,6 +1,7 @@
 "use client";
 
 import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -12,6 +13,16 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSidebar } from "@/components/ui/sidebar";
+import {
+    User,
+    Settings,
+    RotateCw,
+    Globe,
+    Grid3x3,
+    Maximize,
+    Moon,
+    Sun,
+} from "lucide-react";
 
 export function NavUser({
     user,
@@ -23,7 +34,8 @@ export function NavUser({
     };
 }) {
     const { isMobile } = useSidebar();
-    const { setTheme } = useTheme();
+    const { setTheme, theme } = useTheme();
+    const router = useRouter();
 
     // console.log("[NAV-USER]: ", isMobile);
 
@@ -60,14 +72,27 @@ export function NavUser({
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>My Profile</DropdownMenuItem>
-                <DropdownMenuItem>My Settings</DropdownMenuItem>
-                <DropdownMenuItem>Session Defaults</DropdownMenuItem>
-                <DropdownMenuItem>Reload</DropdownMenuItem>
-                <DropdownMenuItem>View Website</DropdownMenuItem>
+                <DropdownMenuItem>
+                    <User />
+                    My Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    <Settings />
+                    My Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.refresh()}>
+                    <RotateCw />
+                    Reload
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    <Globe />
+                    View Website
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Apps</DropdownMenuItem>
-                <DropdownMenuItem>Toggle Full Width</DropdownMenuItem>
+                <DropdownMenuItem>
+                    <Grid3x3 />
+                    Projects
+                </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={() =>
                         setTheme((theme) =>
@@ -75,6 +100,7 @@ export function NavUser({
                         )
                     }
                 >
+                    {theme === "dark" ? <Sun /> : <Moon />}
                     Toggle Theme
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

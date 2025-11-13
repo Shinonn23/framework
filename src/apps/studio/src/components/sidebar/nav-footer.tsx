@@ -7,13 +7,19 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { FileText, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function NavFooter() {
+    const router = useRouter();
+
     return (
         <SidebarGroup>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton tooltip="System Settings">
+                    <SidebarMenuButton
+                        tooltip="System Settings"
+                        onClick={() => router.push("/systems-settings")}
+                    >
                         <Settings className="h-4 w-4" />
                         <span>System Settings</span>
                     </SidebarMenuButton>
