@@ -1,11 +1,46 @@
-import React from "react";
-import { WorkspaceMeta } from "@/types/workspace/meta";
+"use client";
+
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { Responsive, WidthProvider, Layout } from "react-grid-layout";
+import { WorkspaceMeta, WorkspaceComponent } from "@/types/workspace/meta";
 import WorkspaceHeader from "@/components/workspace/header";
 import WorkspaceText from "@/components/workspace/text";
 import WorkspaceCard from "@/components/workspace/card";
 import WorkspaceShortcut from "@/components/workspace/shortcut";
 import WorkspaceSpacer from "@/components/workspace/spacer";
 import WorkspaceQuicklist from "@/components/workspace/quicklist";
+import { Button } from "@/components/ui/button";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {  Pencil, Undo2, Redo2 } from "lucide-react";
+import {
+    HeaderEditDialog,
+    TextEditDialog,
+    CardEditDialog,
+    ShortcutEditDialog,
+    SpacerEditDialog,
+    QuicklistEditDialog,
+} from "@/components/workspace/edit-dialogs";
+import { useLayoutHistory } from "@/hooks/use-layout-history";
+import {
+    DisableInteractions,
+    generateResponsiveLayouts,
+    syncLayoutToComponents,
+    WorkspaceSkeleton,
+    resolveLayoutOverlaps,
+} from "@/components/workspace/utils";
+
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+import "@/styles/workspace-grid.css";
+import { BREAKPOINTS, COLS, CONTAINER_PADDING, MARGIN, ROW_HEIGHT } from "@/components/workspace/const";
+import WorkspaceError from "@/components/workspace/error";
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Components map for standard types
 const componentsMap: Record<string, React.ComponentType<any>> = {
@@ -17,72 +52,439 @@ const componentsMap: Record<string, React.ComponentType<any>> = {
     quicklist: WorkspaceQuicklist,
 };
 
-async function WorkSpacePage({
-    params,
-}: {
-    params: Promise<{ slug?: string[] }>;
-}) {
-    const { slug } = await params;
-    const slugPath = slug?.join("/") || "dashboard";
 
-    // Load JSON metadata
-    let metadata: WorkspaceMeta;
-    try {
-        metadata = await import(`../(meta)/${slugPath}.json`).then(
-            (mod) => mod.default
+// Main Component
+function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
+    const [slugPath, setSlugPath] = useState<string>("");
+    const [metadata, setMetadata] = useState<WorkspaceMeta | null>(null);
+    const [components, setComponents] = useState<WorkspaceComponent[]>([]);
+    const [originalComponents, setOriginalComponents] = useState<
+        WorkspaceComponent[]
+    >([]);
+    const [currentLayouts, setCurrentLayouts] = useState<Layout[]>([]);
+    const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [editingComponent, setEditingComponent] =
+        useState<WorkspaceComponent | null>(null);
+
+    // Layout history for undo/redo
+    const {
+        pushHistory,
+        undo,
+        redo,
+        reset: resetHistory,
+        canUndo,
+        canRedo,
+    } = useLayoutHistory(currentLayouts);
+
+    // Generate responsive layouts from components
+    const responsiveLayouts = useMemo(() => {
+        if (metadata?.responsiveLayouts) {
+            return metadata.responsiveLayouts;
+        }
+        return generateResponsiveLayouts(components);
+    }, [components, metadata?.responsiveLayouts]);
+
+    // Load params
+    useEffect(() => {
+        Promise.resolve(params).then((p) => {
+            setSlugPath(p.slug?.join("/") || "dashboard");
+        });
+    }, [params]);
+
+    // Load metadata function
+    const loadMetadata = async () => {
+        if (!slugPath) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const data = await import(`../(meta)/${slugPath}.json`).then(
+                (mod) => mod.default as WorkspaceMeta,
+            );
+            setMetadata(data);
+            setComponents(data.components);
+            setOriginalComponents(data.components);
+
+            // Initialize layouts
+            const initialLayouts = generateResponsiveLayouts(data.components);
+            setCurrentLayouts(initialLayouts.lg);
+            resetHistory(initialLayouts.lg);
+        } catch (err) {
+            setError(`Could not load workspace: ${slugPath}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Load metadata when slugPath changes
+    useEffect(() => {
+        loadMetadata();
+    }, [slugPath]);
+
+    // Keyboard shortcuts for undo/redo
+    useEffect(() => {
+        if (!isEditMode) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+                e.preventDefault();
+                handleUndo();
+            } else if (
+                (e.ctrlKey || e.metaKey) &&
+                (e.key === "y" || (e.key === "z" && e.shiftKey))
+            ) {
+                e.preventDefault();
+                handleRedo();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isEditMode, canUndo, canRedo]);
+
+    // Event Handlers
+    const handleEditClick = () => {
+        setOriginalComponents([...components]);
+        setIsEditMode(true);
+    };
+
+    const handleLayoutChange = useCallback(
+        (layout: Layout[], allLayouts: { [key: string]: Layout[] }) => {
+            if (!isEditMode) return;
+
+            // Resolve any overlaps by automatically moving conflicting components
+            const resolvedLayout = resolveLayoutOverlaps(layout, COLS[currentBreakpoint as keyof typeof COLS] || COLS.lg);
+
+            setCurrentLayouts(resolvedLayout);
+            pushHistory(resolvedLayout);
+
+            // Sync layout changes back to components
+            const updatedComponents = syncLayoutToComponents(
+                resolvedLayout,
+                components,
+            );
+            setComponents(updatedComponents);
+        },
+        [isEditMode, components, pushHistory, currentBreakpoint],
+    );
+
+    const handleBreakpointChange = useCallback((breakpoint: string) => {
+        setCurrentBreakpoint(breakpoint);
+    }, []);
+
+    const handleUndo = () => {
+        const previousLayouts = undo();
+        if (previousLayouts) {
+            setCurrentLayouts(previousLayouts);
+            const updatedComponents = syncLayoutToComponents(
+                previousLayouts,
+                components,
+            );
+            setComponents(updatedComponents);
+        }
+    };
+
+    const handleRedo = () => {
+        const nextLayouts = redo();
+        if (nextLayouts) {
+            setCurrentLayouts(nextLayouts);
+            const updatedComponents = syncLayoutToComponents(
+                nextLayouts,
+                components,
+            );
+            setComponents(updatedComponents);
+        }
+    };
+
+    const handleSaveWorkspace = () => {
+        // Sync final layouts to components
+        const finalComponents = syncLayoutToComponents(
+            currentLayouts,
+            components,
         );
-    } catch (error) {
+
+        const payload = {
+            version: metadata!.version,
+            grid: metadata!.grid,
+            components: finalComponents,
+            responsiveLayouts: generateResponsiveLayouts(finalComponents),
+        };
+
+        console.log("Mock API Save:", payload);
+        // TODO: await fetch(`/api/workspace/${slugPath}`, {
+        //   method: 'PUT',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify(payload)
+        // });
+
+        setComponents(finalComponents);
+        setOriginalComponents(finalComponents);
+        setIsEditMode(false);
+    };
+
+    const handleCancelEdit = () => {
+        setComponents([...originalComponents]);
+        const cancelLayouts = generateResponsiveLayouts(originalComponents);
+        setCurrentLayouts(cancelLayouts.lg);
+        resetHistory(cancelLayouts.lg);
+        setIsEditMode(false);
+    };
+
+    const handleUpdateComponent = (componentId: string, updatedProps: any) => {
+        setComponents((prevComponents) =>
+            prevComponents.map((comp) =>
+                comp.id === componentId
+                    ? { ...comp, props: { ...comp.props, ...updatedProps } }
+                    : comp,
+            ),
+        );
+    };
+
+    const handleEditComponent = (component: WorkspaceComponent) => {
+        setEditingComponent(component);
+    };
+
+    // Render loading state
+    if (isLoading) {
+        return <WorkspaceSkeleton />;
+    }
+
+    // Render error state
+    if (error || !metadata) {
         return (
-            <div className="p-8">
-                <h1 className="text-2xl font-bold">Workspace not found</h1>
-                <p className="text-muted-foreground mt-2">
-                    Could not load workspace: {slugPath}
-                </p>
-            </div>
+            <WorkspaceError
+                error={error || "Unknown error"}
+                onRetry={loadMetadata}
+            />
         );
     }
 
-    const { grid, components } = metadata;
-    const gridCols = `grid-cols-${grid.columns}`;
-    const gapClass = `gap-${grid.gap}`;
-
     return (
-        <div className={`grid ${gridCols} ${gapClass} p-6`}>
-            {components.map((component) => {
-                const { id, type, layout, props } = component;
-                const Component = componentsMap[type];
-
-                if (!Component) {
-                    return (
-                        <div
-                            key={id}
-                            style={{
-                                gridColumnStart: layout.x + 1,
-                                gridColumnEnd: layout.x + layout.w + 1,
-                                gridRowStart: layout.y + 1,
-                            }}
-                            className="border border-dashed p-4 rounded"
+        <div>
+            {/* Toolbar */}
+            <div className="flex justify-between items-center gap-2 mb-4 px-6 pt-6">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    {isEditMode && (
+                        <span>
+                            Breakpoint:{" "}
+                            <span className="font-medium">
+                                {currentBreakpoint.toUpperCase()}
+                            </span>
+                        </span>
+                    )}
+                </div>
+                <div className="flex gap-2">
+                    <Button variant="outline" size="sm" disabled>
+                        New
+                    </Button>
+                    {!isEditMode ? (
+                        <Button
+                            variant="default"
+                            size="sm"
+                            onClick={handleEditClick}
                         >
-                            <p className="text-muted-foreground">
-                                Unknown component type: {type}
-                            </p>
-                        </div>
-                    );
-                }
+                            Edit
+                        </Button>
+                    ) : (
+                        <TooltipProvider>
+                            <>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleUndo}
+                                            disabled={!canUndo}
+                                        >
+                                            <Undo2 className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Undo (Ctrl+Z)</p>
+                                    </TooltipContent>
+                                </Tooltip>
 
-                return (
-                    <div
-                        key={id}
-                        style={{
-                            gridColumnStart: layout.x + 1,
-                            gridColumnEnd: layout.x + layout.w + 1,
-                            gridRowStart: layout.y + 1,
-                        }}
-                    >
-                        <Component {...props} />
-                    </div>
-                );
-            })}
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleRedo}
+                                            disabled={!canRedo}
+                                        >
+                                            <Redo2 className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Redo (Ctrl+Y)</p>
+                                    </TooltipContent>
+                                </Tooltip>
+
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleCancelEdit}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    variant="default"
+                                    size="sm"
+                                    onClick={handleSaveWorkspace}
+                                >
+                                    Save
+                                </Button>
+                            </>
+                        </TooltipProvider>
+                    )}
+                </div>
+            </div>
+
+            {/* Grid Container with React-Grid-Layout */}
+            <div className="px-6 pb-6">
+                <ResponsiveGridLayout
+                    className="layout"
+                    layouts={responsiveLayouts as any}
+                    breakpoints={BREAKPOINTS}
+                    cols={COLS}
+                    rowHeight={ROW_HEIGHT}
+                    margin={MARGIN}
+                    containerPadding={CONTAINER_PADDING}
+                    isDraggable={isEditMode}
+                    isResizable={isEditMode}
+                    onLayoutChange={handleLayoutChange}
+                    onBreakpointChange={handleBreakpointChange}
+                    preventCollision={false}
+                    compactType={null}
+                    useCSSTransforms={true}
+                >
+                    {components.map((component) => {
+                        const { id, type, props } = component;
+                        const Component = componentsMap[type];
+
+                        if (!Component) {
+                            return (
+                                <div
+                                    key={id}
+                                    className={`${isEditMode ? "border-2 border-dashed border-muted-foreground/20 rounded-lg p-4" : ""}`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-muted-foreground text-sm">
+                                            Unknown component: {type}
+                                        </p>
+                                        {isEditMode && (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleEditComponent(
+                                                        component,
+                                                    )
+                                                }
+                                                className="p-1 bg-background/80 rounded hover:bg-accent transition-all"
+                                            >
+                                                <Pencil className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        return (
+                            <div
+                                key={id}
+                                className={`${isEditMode ? "border-2 border-primary/20 rounded-lg p-2 hover:border-primary/40 transition-all" : ""}`}
+                            >
+                                {isEditMode && (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            handleEditComponent(component)
+                                        }
+                                        className="absolute top-2 right-2 z-10 p-1 bg-background/90 rounded hover:bg-accent hover:scale-110 transition-all shadow-sm"
+                                    >
+                                        <Pencil className="h-4 w-4" />
+                                    </button>
+                                )}
+                                <DisableInteractions disabled={isEditMode}>
+                                    <Component {...props} />
+                                </DisableInteractions>
+                            </div>
+                        );
+                    })}
+                </ResponsiveGridLayout>
+            </div>
+
+            {/* Edit Dialogs */}
+            {editingComponent && editingComponent.type === "header" && (
+                <HeaderEditDialog
+                    open={!!editingComponent}
+                    onOpenChange={(open) => !open && setEditingComponent(null)}
+                    component={editingComponent}
+                    onSave={(props) =>
+                        handleUpdateComponent(editingComponent.id, props)
+                    }
+                />
+            )}
+
+            {editingComponent && editingComponent.type === "text" && (
+                <TextEditDialog
+                    open={!!editingComponent}
+                    onOpenChange={(open) => !open && setEditingComponent(null)}
+                    component={editingComponent}
+                    onSave={(props) =>
+                        handleUpdateComponent(editingComponent.id, props)
+                    }
+                />
+            )}
+
+            {editingComponent && editingComponent.type === "card" && (
+                <CardEditDialog
+                    open={!!editingComponent}
+                    onOpenChange={(open) => !open && setEditingComponent(null)}
+                    component={editingComponent}
+                    onSave={(props) =>
+                        handleUpdateComponent(editingComponent.id, props)
+                    }
+                />
+            )}
+
+            {editingComponent && editingComponent.type === "shortcut" && (
+                <ShortcutEditDialog
+                    open={!!editingComponent}
+                    onOpenChange={(open) => !open && setEditingComponent(null)}
+                    component={editingComponent}
+                    onSave={(props) =>
+                        handleUpdateComponent(editingComponent.id, props)
+                    }
+                />
+            )}
+
+            {editingComponent && editingComponent.type === "spacer" && (
+                <SpacerEditDialog
+                    open={!!editingComponent}
+                    onOpenChange={(open) => !open && setEditingComponent(null)}
+                    component={editingComponent}
+                    onSave={(props) =>
+                        handleUpdateComponent(editingComponent.id, props)
+                    }
+                />
+            )}
+
+            {editingComponent && editingComponent.type === "quicklist" && (
+                <QuicklistEditDialog
+                    open={!!editingComponent}
+                    onOpenChange={(open) => !open && setEditingComponent(null)}
+                    component={editingComponent}
+                    onSave={(props) =>
+                        handleUpdateComponent(editingComponent.id, props)
+                    }
+                />
+            )}
         </div>
     );
 }

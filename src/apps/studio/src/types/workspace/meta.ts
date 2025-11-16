@@ -1,8 +1,20 @@
 // meta-data.ts
+import type { Layout } from "react-grid-layout";
+
+// Responsive layouts for different breakpoints
+interface ResponsiveLayouts {
+    lg: Layout[];
+    md: Layout[];
+    sm: Layout[];
+    xs: Layout[];
+    xxs: Layout[];
+}
+
 interface WorkspaceMeta {
     version: string;
     grid: WorkspaceGrid;
     components: WorkspaceComponent[];
+    responsiveLayouts?: ResponsiveLayouts; // Optional for backwards compatibility
 }
 
 interface WorkspaceGrid {
@@ -10,12 +22,18 @@ interface WorkspaceGrid {
     gap: number;
 }
 
-// layout info (ไม่มี h เพื่อให้ drag-drop ปรับเอง)
+// layout info - now with resize and static support
 interface GridLayout {
     x: number;
     y: number;
     w: number;
     h: number;
+    minW?: number;
+    maxW?: number;
+    minH?: number;
+    maxH?: number;
+    isResizable?: boolean; // Default true
+    isStatic?: boolean; // Default false
 }
 
 // base props
@@ -171,6 +189,7 @@ export type {
     WorkspaceComponentType,
     GridLayout,
     WorkspaceGrid,
+    ResponsiveLayouts,
     HeaderComponent,
     TextComponent,
     CardComponent,

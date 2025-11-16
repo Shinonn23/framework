@@ -27,23 +27,25 @@ function WorkspaceQuicklist({
             {title && (
                 <div className="mb-3">
                     <div className="flex items-center gap-2">
-                        <h2 className="text-base font-medium text-muted-foreground">
+                        <h2 className="text-base font-medium text-muted-foreground truncate">
                             {title}
                         </h2>
                         {description && (
                             <HoverCard>
                                 <HoverCardTrigger asChild>
-                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help shrink-0" />
                                 </HoverCardTrigger>
                                 <HoverCardContent className="w-80">
-                                    <p className="text-sm">{description}</p>
+                                    <p className="text-sm line-clamp-3">
+                                        {description}
+                                    </p>
                                 </HoverCardContent>
                             </HoverCard>
                         )}
                     </div>
                 </div>
             )}
-            <div className="flex flex-col space-y-0">
+            <div className="flex flex-col space-y-0 max-h-[400px] overflow-y-auto">
                 {items.map((item, index) => (
                     <WorkspaceShortcut
                         key={index}

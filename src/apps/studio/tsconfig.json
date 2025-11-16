@@ -16,6 +16,6 @@
             "@packages/*": ["../../packages/*"]
         }
     },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/header/page.tsx.bak"],
     "exclude": ["node_modules"]
 }

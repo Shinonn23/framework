@@ -3,10 +3,7 @@ import {
     GalleryVerticalEnd,
     AudioWaveform,
     Command,
-    SquareTerminal,
-    Bot,
-    BookOpen,
-    Settings2,
+    Hammer,
     Frame,
     PieChart,
 } from "lucide-react";
@@ -38,7 +35,7 @@ const SidebarData = {
         {
             title: "Build",
             url: "/workspace/build",
-            icon: SquareTerminal,
+            icon: Hammer,
         },
     ],
     projects: [

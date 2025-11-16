@@ -18,7 +18,7 @@ export default function AppHeader() {
     const segments = pathname.split("/").filter(Boolean);
 
     return (
-        <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4 sticky top-0 z-10">
+        <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4 sticky top-0 z-50">
             <Breadcrumb>
                 <BreadcrumbList>
                     {segments.map((segment, index) => {

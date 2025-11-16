@@ -4,20 +4,20 @@
         "columns": 12,
         "gap": 6
     },
-	"public": true,
+    "public": true,
     "components": [
         {
-            "id": "get-started-header-2",
+            "id": "get-started-header",
             "type": "header",
-            "layout": { "x": 0, "y": 0, "w": 12, "h": 1 },
+            "layout": { "x": 0, "y": 0, "w": 12, "h": 3 },
             "props": {
                 "title": "Welcome to Your App Builder"
             }
         },
         {
-            "id": "get-started-header",
+            "id": "get-started",
             "type": "text",
-            "layout": { "x": 0, "y": 1, "w": 12, "h": 1 },
+            "layout": { "x": 0, "y": 3, "w": 12, "h": 3 },
             "props": {
                 "content": "Get started",
                 "variant": "section-header",
@@ -28,7 +28,7 @@
         {
             "id": "doctype",
             "type": "shortcut",
-            "layout": { "x": 0, "y": 2, "w": 3, "h": 1 },
+            "layout": { "x": 0, "y": 6, "w": 3, "h": 3 },
             "props": {
                 "label": "DocType",
                 "icon": "FileText",
@@ -38,7 +38,7 @@
         {
             "id": "customize-form",
             "type": "shortcut",
-            "layout": { "x": 3, "y": 2, "w": 3, "h": 1 },
+            "layout": { "x": 3, "y": 6, "w": 3, "h": 3 },
             "props": {
                 "label": "Customize Form",
                 "icon": "Paintbrush",
@@ -48,7 +48,7 @@
         {
             "id": "report",
             "type": "shortcut",
-            "layout": { "x": 6, "y": 2, "w": 3, "h": 1 },
+            "layout": { "x": 6, "y": 6, "w": 3, "h": 3 },
             "props": {
                 "label": "Report",
                 "icon": "BarChart3",
@@ -58,7 +58,7 @@
         {
             "id": "client-script",
             "type": "shortcut",
-            "layout": { "x": 9, "y": 2, "w": 3, "h": 1 },
+            "layout": { "x": 9, "y": 6, "w": 3, "h": 3 },
             "props": {
                 "label": "Client Script",
                 "icon": "Code",
@@ -68,7 +68,7 @@
         {
             "id": "server-script",
             "type": "shortcut",
-            "layout": { "x": 0, "y": 3, "w": 3, "h": 1 },
+            "layout": { "x": 0, "y": 9, "w": 3, "h": 3 },
             "props": {
                 "label": "Server Script",
                 "icon": "Server",
@@ -78,7 +78,7 @@
         {
             "id": "print-format",
             "type": "shortcut",
-            "layout": { "x": 3, "y": 3, "w": 3, "h": 1 },
+            "layout": { "x": 3, "y": 9, "w": 3, "h": 3 },
             "props": {
                 "label": "Print Format Builder",
                 "icon": "Printer",
@@ -88,7 +88,7 @@
         {
             "id": "system-settings",
             "type": "shortcut",
-            "layout": { "x": 6, "y": 3, "w": 3, "h": 1 },
+            "layout": { "x": 6, "y": 9, "w": 3, "h": 3 },
             "props": {
                 "label": "System Settings",
                 "icon": "Settings",
@@ -98,7 +98,7 @@
         {
             "id": "spacer-1",
             "type": "spacer",
-            "layout": { "x": 0, "y": 4, "w": 12, "h": 1 },
+            "layout": { "x": 0, "y": 12, "w": 12, "h": 2 },
             "props": {
                 "height": 20
             }
@@ -106,7 +106,7 @@
         {
             "id": "components-header",
             "type": "text",
-            "layout": { "x": 0, "y": 5, "w": 12, "h": 1 },
+            "layout": { "x": 0, "y": 13, "w": 12, "h": 3 },
             "props": {
                 "content": "Components to build your app",
                 "variant": "section-header",
@@ -117,7 +117,7 @@
         {
             "id": "models-section",
             "type": "quicklist",
-            "layout": { "x": 0, "y": 6, "w": 4, "h": 1 },
+            "layout": { "x": 0, "y": 16, "w": 4, "h": 8 },
             "props": {
                 "title": "Models",
                 "description": "Define your data structure using DocTypes (tables/forms) and create approval Workflows for your business processes.",
@@ -138,7 +138,7 @@
         {
             "id": "views-section",
             "type": "quicklist",
-            "layout": { "x": 4, "y": 6, "w": 4, "h": 1 },
+            "layout": { "x": 4, "y": 16, "w": 4, "h": 10 },
             "props": {
                 "title": "Views",
                 "description": "Create Reports to analyze data, design Print Formats for documents, build Dashboards for insights, and configure Workspaces for navigation.",
@@ -174,7 +174,7 @@
         {
             "id": "customization-section",
             "type": "quicklist",
-            "layout": { "x": 8, "y": 6, "w": 4, "h": 1 },
+            "layout": { "x": 8, "y": 16, "w": 4, "h": 9 },
             "props": {
                 "title": "Customization",
                 "description": "Customize forms, add custom fields to existing DocTypes, translate your app, and configure the navigation bar.",
@@ -205,7 +205,7 @@
         {
             "id": "scripting-section",
             "type": "quicklist",
-            "layout": { "x": 0, "y": 7, "w": 4, "h": 1 },
+            "layout": { "x": 0, "y": 26, "w": 4, "h": 8 },
             "props": {
                 "title": "Scripting",
                 "description": "Write Server Scripts for backend logic, Client Scripts for frontend interactions, and schedule automated jobs.",
@@ -231,7 +231,7 @@
         {
             "id": "modules-section",
             "type": "quicklist",
-            "layout": { "x": 4, "y": 7, "w": 4, "h": 1 },
+            "layout": { "x": 4, "y": 26, "w": 4, "h": 7 },
             "props": {
                 "title": "Modules",
                 "description": "Organize your app into modules and create onboarding experiences for new users.",
@@ -252,7 +252,7 @@
         {
             "id": "packages-section",
             "type": "quicklist",
-            "layout": { "x": 8, "y": 7, "w": 4, "h": 1 },
+            "layout": { "x": 8, "y": 26, "w": 4, "h": 7 },
             "props": {
                 "title": "Packages",
                 "description": "Export and import configurations as packages to share or deploy across environments.",
@@ -273,7 +273,7 @@
         {
             "id": "system-logs-section",
             "type": "quicklist",
-            "layout": { "x": 0, "y": 8, "w": 12, "h": 1 },
+            "layout": { "x": 0, "y": 34, "w": 12, "h": 10 },
             "props": {
                 "title": "System Logs",
                 "description": "Monitor background jobs, scheduled tasks, errors, email communications, and user activity for debugging and auditing.",

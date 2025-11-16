@@ -54,7 +54,7 @@ function WorkspaceText({
               ? "text-sm text-muted-foreground"
               : "text-base";
 
-    return <p className={`${alignClass} ${variantClass}`}>{content}</p>;
+    return <p className={`${alignClass} ${variantClass} line-clamp-3`}>{content}</p>;
 }
 
 export default WorkspaceText;

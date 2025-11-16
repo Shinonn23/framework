@@ -1,5 +1,10 @@
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from "@/components/ui/card";
 import { ChartArea } from "lucide-react";
 
 interface WorkspaceCardProps {
@@ -14,11 +19,15 @@ function WorkspaceCard({ title, description, icon }: WorkspaceCardProps) {
             <CardHeader>
                 {icon && (
                     <div className="text-2xl mb-2" aria-label={icon}>
-                        <ChartArea/>
+                        <ChartArea />
                     </div>
                 )}
-                <CardTitle>{title}</CardTitle>
-                {description && <CardDescription>{description}</CardDescription>}
+                <CardTitle className="truncate">{title}</CardTitle>
+                {description && (
+                    <CardDescription className="line-clamp-2">
+                        {description}
+                    </CardDescription>
+                )}
             </CardHeader>
         </Card>
     );
