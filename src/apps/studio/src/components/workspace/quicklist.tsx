@@ -17,13 +17,12 @@ interface WorkspaceQuicklistProps {
     }[];
 }
 
-function WorkspaceQuicklist({
-    title,
-    description,
-    items,
-}: WorkspaceQuicklistProps) {
+const WorkspaceQuicklist = React.forwardRef<
+    HTMLDivElement,
+    WorkspaceQuicklistProps
+>(({ title, description, items }, ref) => {
     return (
-        <div>
+        <div ref={ref}>
             {title && (
                 <div className="mb-3">
                     <div className="flex items-center gap-2">
@@ -57,6 +56,8 @@ function WorkspaceQuicklist({
             </div>
         </div>
     );
-}
+});
+
+WorkspaceQuicklist.displayName = "WorkspaceQuicklist";
 
 export default WorkspaceQuicklist;

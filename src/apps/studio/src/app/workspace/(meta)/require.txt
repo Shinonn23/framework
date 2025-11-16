@@ -1,0 +1,3 @@
+components type: Header
+if have props { title } : h = 3.75
+else if have props { title, subtitle } = 

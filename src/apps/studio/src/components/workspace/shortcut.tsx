@@ -8,7 +8,10 @@ interface WorkspaceShortcutProps {
     href: string;
 }
 
-function WorkspaceShortcut({ label, icon, href }: WorkspaceShortcutProps) {
+const WorkspaceShortcut = React.forwardRef<
+    HTMLAnchorElement,
+    WorkspaceShortcutProps
+>(({ label, icon, href }, ref) => {
     // Get icon component from lucide-react by name
     const IconComponent = icon
         ? (LucideIcons[icon as keyof typeof LucideIcons] as LucideIcon)
@@ -16,6 +19,7 @@ function WorkspaceShortcut({ label, icon, href }: WorkspaceShortcutProps) {
 
     return (
         <a
+            ref={ref}
             href={href}
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-1.5 group"
         >
@@ -24,6 +28,8 @@ function WorkspaceShortcut({ label, icon, href }: WorkspaceShortcutProps) {
             <ArrowUpRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
         </a>
     );
-}
+});
+
+WorkspaceShortcut.displayName = "WorkspaceShortcut";
 
 export default WorkspaceShortcut;

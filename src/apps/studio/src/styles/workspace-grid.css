@@ -1,32 +1,24 @@
-/* Auto-height grid items based on content */
-.react-grid-item {
-    /* Allow items to grow based on content */
-    height: auto !important;
-    min-height: fit-content;
-}
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
 
-/* Ensure the inner content fills the container */
 .react-grid-item > div {
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-/* Resize handle positioning */
 .react-grid-item > .react-resizable-handle {
     position: absolute;
     bottom: 0;
     right: 0;
 }
 
-/* Dragging state */
 .react-grid-item.react-draggable-dragging {
     opacity: 0.7;
     z-index: 100;
     transition: none;
 }
 
-/* Placeholder styling during drag */
 .react-grid-item.react-grid-placeholder {
     background: hsl(var(--primary) / 0.15);
     border: 2px dashed hsl(var(--primary) / 0.4);
@@ -35,23 +27,24 @@
     transition-duration: 100ms;
 }
 
-/* Resize handle styling for better visibility in edit mode */
 .react-resizable-handle::after {
     border-color: hsl(var(--primary) / 0.5) !important;
     border-width: 0 2px 2px 0;
 }
 
-/* Smooth transitions */
-.react-grid-item {
+/* .react-grid-item {
     transition: all 200ms ease;
     transition-property: left, top, width;
+} */
+
+.react-grid-item {
+    transition: none;
 }
 
 .react-grid-item.cssTransforms {
     transition-property: transform, width;
 }
 
-/* Prevent layout shift during resize */
 .react-grid-item.resizing {
     transition: none;
     z-index: 100;

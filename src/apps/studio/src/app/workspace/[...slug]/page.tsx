@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+    useState,
+    useEffect,
+    useCallback,
+    useMemo,
+    useRef,
+} from "react";
 import { Responsive, WidthProvider, Layout } from "react-grid-layout";
 import { WorkspaceMeta, WorkspaceComponent } from "@/types/workspace/meta";
 import WorkspaceHeader from "@/components/workspace/header";
@@ -16,7 +22,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {  Pencil, Undo2, Redo2 } from "lucide-react";
+import { Pencil, Undo2, Redo2 } from "lucide-react";
 import {
     HeaderEditDialog,
     TextEditDialog,
@@ -33,11 +39,15 @@ import {
     WorkspaceSkeleton,
     resolveLayoutOverlaps,
 } from "@/components/workspace/utils";
-
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
+import { useSize } from "ahooks";
 import "@/styles/workspace-grid.css";
-import { BREAKPOINTS, COLS, CONTAINER_PADDING, MARGIN, ROW_HEIGHT } from "@/components/workspace/const";
+import {
+    BREAKPOINTS,
+    COLS,
+    CONTAINER_PADDING,
+    MARGIN,
+    ROW_HEIGHT,
+} from "@/components/workspace/const";
 import WorkspaceError from "@/components/workspace/error";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -52,9 +62,11 @@ const componentsMap: Record<string, React.ComponentType<any>> = {
     quicklist: WorkspaceQuicklist,
 };
 
-
 // Main Component
 function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
+    const $container = useRef(null);
+    const size = useSize($container);
+    const contentRefs = useRef<Record<string, HTMLElement | null>>({});
     const [slugPath, setSlugPath] = useState<string>("");
     const [metadata, setMetadata] = useState<WorkspaceMeta | null>(null);
     const [components, setComponents] = useState<WorkspaceComponent[]>([]);
@@ -79,13 +91,28 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
         canRedo,
     } = useLayoutHistory(currentLayouts);
 
-    // Generate responsive layouts from components
-    const responsiveLayouts = useMemo(() => {
-        if (metadata?.responsiveLayouts) {
-            return metadata.responsiveLayouts;
-        }
-        return generateResponsiveLayouts(components);
-    }, [components, metadata?.responsiveLayouts]);
+    // Update layout based on content height using ResizeObserver
+    const updateLayout = useCallback(() => {
+  
+        setCurrentLayouts((prevLayout) => {
+ 
+            return prevLayout.map((item) => {
+                const contentEl = contentRefs.current[item.i];
+                let calculatedH = item.h; // Keep original h as default
+
+
+                if (contentEl && contentEl.offsetHeight > 0) {
+                    // Measure actual content height
+                    calculatedH = Math.ceil(contentEl.offsetHeight / ROW_HEIGHT);
+                }
+
+                return {
+                    ...item,
+                    h: calculatedH > 0 ? calculatedH : item.h,
+                };
+            });
+        });
+    }, []);
 
     // Load params
     useEffect(() => {
@@ -110,7 +137,7 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
             setOriginalComponents(data.components);
 
             // Initialize layouts
-            const initialLayouts = generateResponsiveLayouts(data.components);
+            const initialLayouts = generateResponsiveLayouts(data.components, size?.height);
             setCurrentLayouts(initialLayouts.lg);
             resetHistory(initialLayouts.lg);
         } catch (err) {
@@ -124,6 +151,31 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
     useEffect(() => {
         loadMetadata();
     }, [slugPath]);
+
+    // Setup ResizeObserver for dynamic height calculation
+    useEffect(() => {
+        if (!components.length) return;
+
+        // Use setTimeout to ensure refs are set after render
+        const timeoutId = setTimeout(() => {
+            updateLayout();
+
+            // Use ResizeObserver to watch content size changes
+            const observer = new ResizeObserver(() => {
+                // Debounce the update to avoid too many recalculations
+                requestAnimationFrame(() => updateLayout());
+            });
+
+            // Observe all content elements
+            Object.values(contentRefs.current).forEach((el) => {
+                if (el) observer.observe(el);
+            });
+
+            return () => observer.disconnect();
+        }, 100);
+
+        return () => clearTimeout(timeoutId);
+    }, [components, updateLayout]);
 
     // Keyboard shortcuts for undo/redo
     useEffect(() => {
@@ -157,7 +209,10 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
             if (!isEditMode) return;
 
             // Resolve any overlaps by automatically moving conflicting components
-            const resolvedLayout = resolveLayoutOverlaps(layout, COLS[currentBreakpoint as keyof typeof COLS] || COLS.lg);
+            const resolvedLayout = resolveLayoutOverlaps(
+                layout,
+                COLS[currentBreakpoint as keyof typeof COLS] || COLS.lg,
+            );
 
             setCurrentLayouts(resolvedLayout);
             pushHistory(resolvedLayout);
@@ -185,6 +240,8 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
                 components,
             );
             setComponents(updatedComponents);
+            // Recalculate heights after undo
+            setTimeout(() => updateLayout(), 100);
         }
     };
 
@@ -197,6 +254,8 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
                 components,
             );
             setComponents(updatedComponents);
+            // Recalculate heights after redo
+            setTimeout(() => updateLayout(), 100);
         }
     };
 
@@ -211,7 +270,7 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
             version: metadata!.version,
             grid: metadata!.grid,
             components: finalComponents,
-            responsiveLayouts: generateResponsiveLayouts(finalComponents),
+            responsiveLayouts: generateResponsiveLayouts(finalComponents, size?.height),
         };
 
         console.log("Mock API Save:", payload);
@@ -228,7 +287,7 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
 
     const handleCancelEdit = () => {
         setComponents([...originalComponents]);
-        const cancelLayouts = generateResponsiveLayouts(originalComponents);
+        const cancelLayouts = generateResponsiveLayouts(originalComponents, size?.height);
         setCurrentLayouts(cancelLayouts.lg);
         resetHistory(cancelLayouts.lg);
         setIsEditMode(false);
@@ -263,8 +322,11 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
         );
     }
 
+    // console.log("[DEBUG] components:", components);
+    // console.log("[DEBUG] responsiveLayouts:", responsiveLayouts);
+
     return (
-        <div>
+        <div ref={$container} style={{ height: "100%" }}>
             {/* Toolbar */}
             <div className="flex justify-between items-center gap-2 mb-4 px-6 pt-6">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -348,7 +410,7 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
             <div className="px-6 pb-6">
                 <ResponsiveGridLayout
                     className="layout"
-                    layouts={responsiveLayouts as any}
+                    layouts={{ lg: currentLayouts }}
                     breakpoints={BREAKPOINTS}
                     cols={COLS}
                     rowHeight={ROW_HEIGHT}
@@ -359,8 +421,8 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
                     onLayoutChange={handleLayoutChange}
                     onBreakpointChange={handleBreakpointChange}
                     preventCollision={false}
-                    compactType={null}
-                    useCSSTransforms={true}
+                    compactType={"vertical"}
+                    useCSSTransforms={false}
                 >
                     {components.map((component) => {
                         const { id, type, props } = component;
@@ -411,7 +473,12 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
                                     </button>
                                 )}
                                 <DisableInteractions disabled={isEditMode}>
-                                    <Component {...props} />
+                                    <Component
+                                        {...props}
+                                        ref={(el: HTMLElement | null) => {
+                                            contentRefs.current[id] = el;
+                                        }}
+                                    />
                                 </DisableInteractions>
                             </div>
                         );

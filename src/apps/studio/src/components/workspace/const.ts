@@ -24,9 +24,9 @@ const BREAKPOINTS = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 };
 const COLS = { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 };
 
 // Grid configuration
-const ROW_HEIGHT = 0; // Base height in pixels (smaller for more granular control)
-const MARGIN: [number, number] = [24, 24]; // gap-6 in Tailwind = 24px
-const CONTAINER_PADDING: [number, number] = [24, 24]; // px-6 = 24px
+const ROW_HEIGHT = 30; // Base height in pixels
+const MARGIN: [number, number] = [4, 4]; // margin between grid items
+const CONTAINER_PADDING: [number, number] = [0, 0]; // container padding
 
 export {
     COMPONENT_SPECS,

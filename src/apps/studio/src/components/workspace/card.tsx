@@ -13,24 +13,28 @@ interface WorkspaceCardProps {
     icon?: string;
 }
 
-function WorkspaceCard({ title, description, icon }: WorkspaceCardProps) {
-    return (
-        <Card>
-            <CardHeader>
-                {icon && (
-                    <div className="text-2xl mb-2" aria-label={icon}>
-                        <ChartArea />
-                    </div>
-                )}
-                <CardTitle className="truncate">{title}</CardTitle>
-                {description && (
-                    <CardDescription className="line-clamp-2">
-                        {description}
-                    </CardDescription>
-                )}
-            </CardHeader>
-        </Card>
-    );
-}
+const WorkspaceCard = React.forwardRef<HTMLDivElement, WorkspaceCardProps>(
+    ({ title, description, icon }, ref) => {
+        return (
+            <Card ref={ref}>
+                <CardHeader>
+                    {icon && (
+                        <div className="text-2xl mb-2" aria-label={icon}>
+                            <ChartArea />
+                        </div>
+                    )}
+                    <CardTitle className="truncate">{title}</CardTitle>
+                    {description && (
+                        <CardDescription className="line-clamp-2">
+                            {description}
+                        </CardDescription>
+                    )}
+                </CardHeader>
+            </Card>
+        );
+    },
+);
+
+WorkspaceCard.displayName = "WorkspaceCard";
 
 export default WorkspaceCard;

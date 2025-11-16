@@ -1,7 +1,7 @@
 import { WorkspaceComponent } from "@/types/workspace/meta";
 import React, { FC, ReactNode } from "react";
 import { Layout } from "react-grid-layout";
-import { COMPONENT_SPECS, COLS } from "./const";
+import { COMPONENT_SPECS, COLS, ROW_HEIGHT, MARGIN } from "./const";
 
 const DisableInteractions: FC<{
     disabled: boolean;
@@ -46,7 +46,7 @@ function compactLayoutVertically(layout: Layout[], cols: number): Layout[] {
     });
 
     const result: Layout[] = [];
-    
+
     /**
      * Check if a position collides with any existing item in result
      */
@@ -66,7 +66,7 @@ function compactLayoutVertically(layout: Layout[], cols: number): Layout[] {
      */
     const findHighestAvailableY = (item: Layout): number => {
         let testY = 0;
-        
+
         // Try placing from y=0 and move down until no collision
         while (testY < 1000) {
             const testItem = { ...item, y: testY };
@@ -75,7 +75,7 @@ function compactLayoutVertically(layout: Layout[], cols: number): Layout[] {
             }
             testY++;
         }
-        
+
         return testY;
     };
 
@@ -93,10 +93,7 @@ function compactLayoutVertically(layout: Layout[], cols: number): Layout[] {
  * Uses a cascade/push mechanism - when a component is placed on top of another,
  * the existing component is automatically moved to the nearest free slot
  */
-function resolveLayoutOverlaps(
-    layout: Layout[],
-    cols: number,
-): Layout[] {
+function resolveLayoutOverlaps(layout: Layout[], cols: number): Layout[] {
     const result = [...layout];
     const maxSearchRows = 200;
 
@@ -221,7 +218,7 @@ function recalculateLayoutForBreakpoint(
     });
 
     const result: Layout[] = [];
-    
+
     // Track occupied cells in the grid
     // Key: "x,y", Value: true if occupied
     const occupiedCells = new Set<string>();
@@ -229,9 +226,14 @@ function recalculateLayoutForBreakpoint(
     /**
      * Check if a position is available for an item
      */
-    const isPositionAvailable = (x: number, y: number, w: number, h: number): boolean => {
+    const isPositionAvailable = (
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+    ): boolean => {
         if (x + w > targetCols) return false;
-        
+
         for (let dy = 0; dy < h; dy++) {
             for (let dx = 0; dx < w; dx++) {
                 if (occupiedCells.has(`${x + dx},${y + dy}`)) {
@@ -256,11 +258,14 @@ function recalculateLayoutForBreakpoint(
     /**
      * Find the best position for an item using bin-packing strategy
      */
-    const findBestPosition = (w: number, h: number): { x: number; y: number } => {
+    const findBestPosition = (
+        w: number,
+        h: number,
+    ): { x: number; y: number } => {
         // Try to find the topmost, leftmost available position
         let bestY = 0;
         let maxSearchRows = 100; // Prevent infinite loop
-        
+
         for (let y = 0; y < maxSearchRows; y++) {
             for (let x = 0; x <= targetCols - w; x++) {
                 if (isPositionAvailable(x, y, w, h)) {
@@ -268,7 +273,7 @@ function recalculateLayoutForBreakpoint(
                 }
             }
         }
-        
+
         // Fallback: place at the bottom
         return { x: 0, y: maxSearchRows };
     };
@@ -293,7 +298,7 @@ function recalculateLayoutForBreakpoint(
         };
 
         result.push(newItem);
-        
+
         // Mark cells as occupied
         markOccupied(x, y, scaledW, item.h);
     }
@@ -301,7 +306,10 @@ function recalculateLayoutForBreakpoint(
     return result;
 }
 
-function generateResponsiveLayouts(components: WorkspaceComponent[]): {
+function generateResponsiveLayouts(
+    components: WorkspaceComponent[],
+    containerHeight?: number,
+): {
     lg: Layout[];
     md: Layout[];
     sm: Layout[];
@@ -310,12 +318,22 @@ function generateResponsiveLayouts(components: WorkspaceComponent[]): {
 } {
     const lg: Layout[] = components.map((comp) => {
         const spec = COMPONENT_SPECS[comp.type] || { w: 12, h: 3 };
+
+        // Calculate dynamic height if containerHeight is provided and component doesn't have h
+        let calculatedH = comp.layout.h || spec.h;
+
+        if (!comp.layout.h && containerHeight) {
+            // Calculate h based on container height similar to the example
+            const totalGridHeight = containerHeight / (ROW_HEIGHT + MARGIN[1]);
+            calculatedH = Math.ceil(totalGridHeight / components.length);
+        }
+
         return {
             i: comp.id,
             x: comp.layout.x,
             y: comp.layout.y,
             w: comp.layout.w || spec.w,
-            h: comp.layout.h || spec.h,
+            h: calculatedH,
             minW: comp.layout.minW || spec.minW,
             maxW: comp.layout.maxW || spec.maxW,
             minH: comp.layout.minH || spec.minH,
