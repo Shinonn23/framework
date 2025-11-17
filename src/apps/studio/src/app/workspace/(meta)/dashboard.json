@@ -1,0 +1,22 @@
+{
+    "version": "3.0",
+    "grid": {
+        "breakpoints": { "lg": 1200, "md": 996, "sm": 768, "xs": 480, "xxs": 0 },
+        "cols": { "lg": 12, "md": 10, "sm": 6, "xs": 4, "xxs": 2 },
+        "rowHeight": 40
+    },
+    "components": [
+        {
+            "id": "header-1",
+            "type": "header",
+            "layout": { "x": 0, "y": 0, "w": 12, "h": 3 },
+            "props": { "title": "Test Header" }
+        },
+        {
+            "id": "text-1",
+            "type": "text",
+            "layout": { "x": 0, "y": 3, "w": 12, "h": 2 },
+            "props": { "content": "Test Content" }
+        }
+    ]
+}

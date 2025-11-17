@@ -87,22 +87,21 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
         undo,
         redo,
         reset: resetHistory,
+        setSkipNext,
         canUndo,
         canRedo,
     } = useLayoutHistory(currentLayouts);
 
     // Update layout based on content height using ResizeObserver
     const updateLayout = useCallback(() => {
+        setSkipNext(); // Skip history recording for auto-height updates
   
         setCurrentLayouts((prevLayout) => {
- 
             return prevLayout.map((item) => {
                 const contentEl = contentRefs.current[item.i];
-                let calculatedH = item.h; // Keep original h as default
-
+                let calculatedH = item.h;
 
                 if (contentEl && contentEl.offsetHeight > 0) {
-                    // Measure actual content height
                     calculatedH = Math.ceil(contentEl.offsetHeight / ROW_HEIGHT);
                 }
 
@@ -112,7 +111,7 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
                 };
             });
         });
-    }, []);
+    }, [setSkipNext]);
 
     // Load params
     useEffect(() => {
@@ -208,7 +207,6 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
         (layout: Layout[], allLayouts: { [key: string]: Layout[] }) => {
             if (!isEditMode) return;
 
-            // Resolve any overlaps by automatically moving conflicting components
             const resolvedLayout = resolveLayoutOverlaps(
                 layout,
                 COLS[currentBreakpoint as keyof typeof COLS] || COLS.lg,
@@ -217,7 +215,6 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
             setCurrentLayouts(resolvedLayout);
             pushHistory(resolvedLayout);
 
-            // Sync layout changes back to components
             const updatedComponents = syncLayoutToComponents(
                 resolvedLayout,
                 components,
@@ -240,7 +237,6 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
                 components,
             );
             setComponents(updatedComponents);
-            // Recalculate heights after undo
             setTimeout(() => updateLayout(), 100);
         }
     };
@@ -254,7 +250,6 @@ function WorkSpacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
                 components,
             );
             setComponents(updatedComponents);
-            // Recalculate heights after redo
             setTimeout(() => updateLayout(), 100);
         }
     };
