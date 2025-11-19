@@ -1,11 +1,11 @@
 import { Command } from "commander";
 
-const Build = new Command().name("build").description("Manage applications").action(index)
+const Build = new Command().name("build").description("Manage applications").action(buildApp)
 
-function index() {
+function buildApp() {
     console.log("Building app...");
 }
 
-Build.command("build").action(index);
+Build.command("build").action(buildApp);
 
 export default Build

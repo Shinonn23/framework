@@ -34,8 +34,8 @@ async function generateFile(
         await writeFile(outputFileName, formattedTemplate, "utf8");
 
         console.log("File generated and formatted:", outputFileName);
-    } catch (err) {
-        console.error("Error generating file:", err);
+    } catch (error) {
+        console.error("Error generating file:", error);
     }
 }
 
