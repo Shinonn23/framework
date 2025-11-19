@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 
-type AnyObject = { [k: string]: any };
+type AnyObject = { [key: string]: any };
 
 /**
  * Recursively converts empty or whitespace-only strings to `null` within a value.
@@ -47,17 +47,17 @@ function convertEmptyStringsToNull<T>(value: T): T {
 
     // Handle arrays recursively
     if (Array.isArray(value)) {
-        return value.map((el) => convertEmptyStringsToNull(el)) as unknown as T;
+        return value.map((element) => convertEmptyStringsToNull(element)) as unknown as T;
     }
 
     // Handle plain objects recursively
     if (typeof value === "object") {
-        const obj = value as AnyObject;
-        const out: AnyObject = Array.isArray(obj) ? [] : {};
-        for (const key of Object.keys(obj)) {
-            out[key] = convertEmptyStringsToNull(obj[key]);
+        const sourceObject = value as AnyObject;
+        const result: AnyObject = Array.isArray(sourceObject) ? [] : {};
+        for (const key of Object.keys(sourceObject)) {
+            result[key] = convertEmptyStringsToNull(sourceObject[key]);
         }
-        return out as T;
+        return result as T;
     }
 
     // Fallback (should not be reached)

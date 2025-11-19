@@ -13,9 +13,9 @@ async function fillDocumentTemplate(
     try {
         // เรียกใช้ mustache.render แบบมาตรฐาน
         return mustache.render(template, values);
-    } catch (err) {
-        console.error("Error while filling template with Mustache:", err);
-        throw err; // propagate error
+    } catch (error) {
+        console.error("Error while filling template with Mustache:", error);
+        throw error; // propagate error
     }
 }
 
