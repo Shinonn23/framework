@@ -444,6 +444,10 @@ export type DocumentUncheckedUpdateManyWithoutModuleNestedInput = {
   deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
 }
 
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
 export type DocumentCreateWithoutModuleInput = {
   name: string
   content?: string | null

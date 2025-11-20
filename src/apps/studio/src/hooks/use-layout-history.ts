@@ -8,94 +8,120 @@ interface LayoutHistoryState {
     timestamp: number;
 }
 
+interface State {
+    history: LayoutHistoryState[];
+    currentIndex: number;
+}
+
 // Helper to compare layouts ignoring 'moved' property
 function areLayoutsEqual(layouts1: Layout[], layouts2: Layout[]): boolean {
     if (layouts1.length !== layouts2.length) return false;
-    
+
     const normalize = (layout: Layout) => {
         const { moved, ...rest } = layout;
         return rest;
     };
-    
-    return JSON.stringify(layouts1.map(normalize)) === JSON.stringify(layouts2.map(normalize));
+
+    return (
+        JSON.stringify(layouts1.map(normalize)) ===
+        JSON.stringify(layouts2.map(normalize))
+    );
 }
 
 export function useLayoutHistory(initialLayouts: Layout[]) {
-    const [history, setHistory] = useState<LayoutHistoryState[]>([
-        { layouts: initialLayouts, timestamp: Date.now() },
-    ]);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const initialState = {
+        history: [{ layouts: initialLayouts, timestamp: Date.now() }],
+        currentIndex: 0,
+    };
+
+    const [state, setState] = useState<State>(initialState);
+    const stateRef = useRef<State>(initialState);
     const skipNextPush = useRef(false);
 
-    const canUndo = currentIndex > 0;
-    const canRedo = currentIndex < history.length - 1;
+    const pushHistory = useCallback((newLayouts: Layout[]) => {
+        if (skipNextPush.current) {
+            skipNextPush.current = false;
+            return;
+        }
 
-    const pushHistory = useCallback(
-        (newLayouts: Layout[]) => {
-            // Skip if flag is set (undo/redo or auto-height update)
-            if (skipNextPush.current) {
-                skipNextPush.current = false;
-                return;
-            }
+        const prev = stateRef.current;
+        const currentLayouts = prev.history[prev.currentIndex]?.layouts;
 
-            setHistory((prev) => {
-                const currentLayouts = prev[currentIndex]?.layouts;
-                
-                // Skip if layouts haven't actually changed
-                if (currentLayouts && areLayoutsEqual(currentLayouts, newLayouts)) {
-                    return prev;
-                }
+        if (currentLayouts && areLayoutsEqual(currentLayouts, newLayouts)) {
+            return;
+        }
 
-                // Remove forward history
-                const newHistory = prev.slice(0, currentIndex + 1);
+        const newHistory = prev.history.slice(0, prev.currentIndex + 1);
+        newHistory.push({
+            layouts: newLayouts,
+            timestamp: Date.now(),
+        });
 
-                // Add new state
-                newHistory.push({
-                    layouts: newLayouts,
-                    timestamp: Date.now(),
-                });
+        let newIndex = newHistory.length - 1;
 
-                // Limit history size
-                if (newHistory.length > MAX_HISTORY_SIZE) {
-                    newHistory.shift();
-                    setCurrentIndex((idx) => Math.max(0, idx - 1));
-                    return newHistory;
-                }
+        if (newHistory.length > MAX_HISTORY_SIZE) {
+            newHistory.shift();
+            newIndex--;
+        }
 
-                setCurrentIndex(newHistory.length - 1);
-                return newHistory;
-            });
-        },
-        [currentIndex],
-    );
+        const nextState = {
+            history: newHistory,
+            currentIndex: newIndex,
+        };
+
+        stateRef.current = nextState;
+        setState(nextState);
+    }, []);
 
     const undo = useCallback(() => {
-        if (!canUndo) return null;
-        
+        const prev = stateRef.current;
+        if (prev.currentIndex <= 0) return null;
+
         skipNextPush.current = true;
-        const newIndex = currentIndex - 1;
-        setCurrentIndex(newIndex);
-        return history[newIndex].layouts;
-    }, [canUndo, currentIndex, history]);
+        const newIndex = prev.currentIndex - 1;
+
+        const nextState = {
+            ...prev,
+            currentIndex: newIndex,
+        };
+
+        stateRef.current = nextState;
+        setState(nextState);
+
+        return nextState.history[newIndex].layouts;
+    }, []);
 
     const redo = useCallback(() => {
-        if (!canRedo) return null;
-        
+        const prev = stateRef.current;
+        if (prev.currentIndex >= prev.history.length - 1) return null;
+
         skipNextPush.current = true;
-        const newIndex = currentIndex + 1;
-        setCurrentIndex(newIndex);
-        return history[newIndex].layouts;
-    }, [canRedo, currentIndex, history]);
+        const newIndex = prev.currentIndex + 1;
+
+        const nextState = {
+            ...prev,
+            currentIndex: newIndex,
+        };
+
+        stateRef.current = nextState;
+        setState(nextState);
+
+        return nextState.history[newIndex].layouts;
+    }, []);
 
     const reset = useCallback((newLayouts: Layout[]) => {
         skipNextPush.current = true;
-        setHistory([{ layouts: newLayouts, timestamp: Date.now() }]);
-        setCurrentIndex(0);
+        const nextState = {
+            history: [{ layouts: newLayouts, timestamp: Date.now() }],
+            currentIndex: 0,
+        };
+        stateRef.current = nextState;
+        setState(nextState);
     }, []);
 
     const getCurrentLayouts = useCallback(() => {
-        return history[currentIndex]?.layouts || [];
-    }, [history, currentIndex]);
+        return state.history[state.currentIndex]?.layouts || [];
+    }, [state.history, state.currentIndex]);
 
     const setSkipNext = useCallback(() => {
         skipNextPush.current = true;
@@ -106,11 +132,11 @@ export function useLayoutHistory(initialLayouts: Layout[]) {
         undo,
         redo,
         reset,
-        canUndo,
-        canRedo,
+        canUndo: state.currentIndex > 0,
+        canRedo: state.currentIndex < state.history.length - 1,
         getCurrentLayouts,
         setSkipNext,
-        historySize: history.length,
-        currentIndex,
+        historySize: state.history.length,
+        currentIndex: state.currentIndex,
     };
 }

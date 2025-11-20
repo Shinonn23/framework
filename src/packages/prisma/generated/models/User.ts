@@ -229,7 +229,6 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   ownedProjects?: Prisma.ProjectListRelationFilter
-  grants?: Prisma.UserGrantListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -241,7 +240,6 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   ownedProjects?: Prisma.ProjectOrderByRelationAggregateInput
-  grants?: Prisma.UserGrantOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -256,7 +254,6 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   ownedProjects?: Prisma.ProjectListRelationFilter
-  grants?: Prisma.UserGrantListRelationFilter
 }, "id" | "username" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -295,7 +292,6 @@ export type UserCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ownedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
-  grants?: Prisma.UserGrantCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -307,7 +303,6 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ownedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
-  grants?: Prisma.UserGrantUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -318,7 +313,6 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
-  grants?: Prisma.UserGrantUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -330,7 +324,6 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
-  grants?: Prisma.UserGrantUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -360,11 +353,6 @@ export type UserUncheckedUpdateManyInput = {
   metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type UserScalarRelationFilter = {
-  is?: Prisma.UserWhereInput
-  isNot?: Prisma.UserWhereInput
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -403,22 +391,25 @@ export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
 }
 
-export type UserCreateNestedOneWithoutGrantsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutGrantsInput, Prisma.UserUncheckedCreateWithoutGrantsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGrantsInput
-  connect?: Prisma.UserWhereUniqueInput
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
 }
 
-export type UserUpdateOneRequiredWithoutGrantsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutGrantsInput, Prisma.UserUncheckedCreateWithoutGrantsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGrantsInput
-  upsert?: Prisma.UserUpsertWithoutGrantsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGrantsInput, Prisma.UserUpdateWithoutGrantsInput>, Prisma.UserUncheckedUpdateWithoutGrantsInput>
+export type StringFieldUpdateOperationsInput = {
+  set?: string
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type UserCreateNestedOneWithoutOwnedProjectsInput = {
@@ -435,64 +426,6 @@ export type UserUpdateOneRequiredWithoutOwnedProjectsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOwnedProjectsInput, Prisma.UserUpdateWithoutOwnedProjectsInput>, Prisma.UserUncheckedUpdateWithoutOwnedProjectsInput>
 }
 
-export type UserCreateWithoutGrantsInput = {
-  username: string
-  email: string
-  password: string
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ownedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
-}
-
-export type UserUncheckedCreateWithoutGrantsInput = {
-  id?: number
-  username: string
-  email: string
-  password: string
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ownedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
-}
-
-export type UserCreateOrConnectWithoutGrantsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutGrantsInput, Prisma.UserUncheckedCreateWithoutGrantsInput>
-}
-
-export type UserUpsertWithoutGrantsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutGrantsInput, Prisma.UserUncheckedUpdateWithoutGrantsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutGrantsInput, Prisma.UserUncheckedCreateWithoutGrantsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutGrantsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutGrantsInput, Prisma.UserUncheckedUpdateWithoutGrantsInput>
-}
-
-export type UserUpdateWithoutGrantsInput = {
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ownedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
-}
-
-export type UserUncheckedUpdateWithoutGrantsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ownedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
-}
-
 export type UserCreateWithoutOwnedProjectsInput = {
   username: string
   email: string
@@ -500,7 +433,6 @@ export type UserCreateWithoutOwnedProjectsInput = {
   metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
-  grants?: Prisma.UserGrantCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOwnedProjectsInput = {
@@ -511,7 +443,6 @@ export type UserUncheckedCreateWithoutOwnedProjectsInput = {
   metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
-  grants?: Prisma.UserGrantUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOwnedProjectsInput = {
@@ -537,7 +468,6 @@ export type UserUpdateWithoutOwnedProjectsInput = {
   metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  grants?: Prisma.UserGrantUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOwnedProjectsInput = {
@@ -548,7 +478,6 @@ export type UserUncheckedUpdateWithoutOwnedProjectsInput = {
   metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  grants?: Prisma.UserGrantUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -558,12 +487,10 @@ export type UserUncheckedUpdateWithoutOwnedProjectsInput = {
 
 export type UserCountOutputType = {
   ownedProjects: number
-  grants: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownedProjects?: boolean | UserCountOutputTypeCountOwnedProjectsArgs
-  grants?: boolean | UserCountOutputTypeCountGrantsArgs
 }
 
 /**
@@ -583,13 +510,6 @@ export type UserCountOutputTypeCountOwnedProjectsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.ProjectWhereInput
 }
 
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountGrantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserGrantWhereInput
-}
-
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -600,7 +520,6 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   ownedProjects?: boolean | Prisma.User$ownedProjectsArgs<ExtArgs>
-  grants?: boolean | Prisma.User$grantsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -637,7 +556,6 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "password" | "metaData" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownedProjects?: boolean | Prisma.User$ownedProjectsArgs<ExtArgs>
-  grants?: boolean | Prisma.User$grantsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -647,7 +565,6 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     ownedProjects: Prisma.$ProjectPayload<ExtArgs>[]
-    grants: Prisma.$UserGrantPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1052,7 +969,6 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   ownedProjects<T extends Prisma.User$ownedProjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownedProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  grants<T extends Prisma.User$grantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$grantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1496,30 +1412,6 @@ export type User$ownedProjectsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.ProjectScalarFieldEnum | Prisma.ProjectScalarFieldEnum[]
-}
-
-/**
- * User.grants
- */
-export type User$grantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the UserGrant
-   */
-  select?: Prisma.UserGrantSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the UserGrant
-   */
-  omit?: Prisma.UserGrantOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserGrantInclude<ExtArgs> | null
-  where?: Prisma.UserGrantWhereInput
-  orderBy?: Prisma.UserGrantOrderByWithRelationInput | Prisma.UserGrantOrderByWithRelationInput[]
-  cursor?: Prisma.UserGrantWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.UserGrantScalarFieldEnum | Prisma.UserGrantScalarFieldEnum[]
 }
 
 /**

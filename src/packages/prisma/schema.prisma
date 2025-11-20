@@ -15,60 +15,6 @@ datasource db {
     provider = "sqlite"
 }
 
-// --- RBAC System ---
-
-model Permission {
-    id          String   @id @default(cuid())
-    action      String   // e.g. "document:read", "project:delete"
-    description String?
-    
-    roles       RolePermission[]
-    
-    @@unique([action])
-}
-
-model Role {
-    id          String   @id @default(cuid())
-    name        String
-    description String?
-    
-    // Scope: If projectId is null, it's a Global/System Role (e.g. Super Admin)
-    // If projectId is set, it's a Custom Project Role
-    projectId   Int?
-    project     Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    
-    permissions RolePermission[]
-    grants      UserGrant[]
-
-    @@unique([name, projectId])
-}
-
-model RolePermission {
-    roleId       String
-    permissionId String
-    
-    role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-    permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-    
-    @@id([roleId, permissionId])
-}
-
-model UserGrant {
-    id           Int      @id @default(autoincrement())
-    userId       Int
-    roleId       String
-    
-    // Polymorphic Resource
-    resourceType String   // "System", "Project", "Module", "Document", "Report"
-    resourceId   Int      // ID of the resource. 0 for System/Global.
-    
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    role         Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
-
-    @@index([userId])
-    @@index([resourceType, resourceId])
-}
-
 // --- Entities ---
 
 model User {
@@ -82,7 +28,6 @@ model User {
 
     // Relations
     ownedProjects Project[]   @relation("ProjectOwner")
-    grants        UserGrant[]
 }
 
 model Project {
@@ -97,7 +42,6 @@ model Project {
     // Relations
     owner   User     @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
     modules Module[]
-    roles   Role[]
 }
 
 model Module {

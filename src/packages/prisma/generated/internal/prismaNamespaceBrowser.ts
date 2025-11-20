@@ -51,10 +51,6 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Permission: 'Permission',
-  Role: 'Role',
-  RolePermission: 'RolePermission',
-  UserGrant: 'UserGrant',
   User: 'User',
   Project: 'Project',
   Module: 'Module',
@@ -74,44 +70,6 @@ export const TransactionIsolationLevel = {
 } as const
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
-
-
-export const PermissionScalarFieldEnum = {
-  id: 'id',
-  action: 'action',
-  description: 'description'
-} as const
-
-export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
-
-
-export const RoleScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  description: 'description',
-  projectId: 'projectId'
-} as const
-
-export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
-
-
-export const RolePermissionScalarFieldEnum = {
-  roleId: 'roleId',
-  permissionId: 'permissionId'
-} as const
-
-export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
-
-
-export const UserGrantScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  roleId: 'roleId',
-  resourceType: 'resourceType',
-  resourceId: 'resourceId'
-} as const
-
-export type UserGrantScalarFieldEnum = (typeof UserGrantScalarFieldEnum)[keyof typeof UserGrantScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
@@ -206,14 +164,6 @@ export const NullableJsonNullValueInput = {
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
 export const JsonNullValueFilter = {
   DbNull: 'DbNull',
   JsonNull: 'JsonNull',
@@ -229,4 +179,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

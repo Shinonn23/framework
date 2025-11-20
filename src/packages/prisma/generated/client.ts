@@ -29,8 +29,8 @@ export * from "./enums"
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Permissions
- * const permissions = await prisma.permission.findMany()
+ * // Fetch zero or more Users
+ * const users = await prisma.user.findMany()
  * ```
  * 
  * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
@@ -39,26 +39,6 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
-/**
- * Model Permission
- * 
- */
-export type Permission = Prisma.PermissionModel
-/**
- * Model Role
- * 
- */
-export type Role = Prisma.RoleModel
-/**
- * Model RolePermission
- * 
- */
-export type RolePermission = Prisma.RolePermissionModel
-/**
- * Model UserGrant
- * 
- */
-export type UserGrant = Prisma.UserGrantModel
 /**
  * Model User
  * 

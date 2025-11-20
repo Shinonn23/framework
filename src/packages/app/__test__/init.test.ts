@@ -1,12 +1,5 @@
-import {
-    describe,
-    it,
-    expect,
-    beforeEach,
-    afterEach,
-    spyOn,
-} from "bun:test";
-import { initNewProject } from "../../app/init";
+import { describe, it, expect, beforeEach, afterEach, spyOn } from "bun:test";
+import { initNewProject } from "../index";
 import fs from "fs-extra";
 import path from "path";
 import * as childProcess from "child_process";

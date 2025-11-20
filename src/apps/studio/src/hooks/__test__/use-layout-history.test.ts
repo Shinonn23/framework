@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { renderHook, act } from "@testing-library/react";
 import { useLayoutHistory } from "../use-layout-history";
 import type { Layout } from "react-grid-layout";
@@ -142,7 +143,11 @@ describe("useLayoutHistory", () => {
             result.current.pushHistory(mockLayout2);
             result.current.pushHistory(mockLayout3);
             result.current.undo();
+            // Consume skip
+            result.current.pushHistory(mockLayout2);
             result.current.undo();
+            // Consume skip
+            result.current.pushHistory(mockLayout1);
         });
 
         expect(result.current.currentIndex).toBe(0);

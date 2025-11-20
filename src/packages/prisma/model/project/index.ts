@@ -1,6 +1,9 @@
-import { prisma } from "@/prisma";
-import type { PrismaClient, Project as ProjectType, Prisma } from "@/prisma/generated/client";
-import { PermissionService } from "@/permission/service";
+import { prisma } from "../../../prisma";
+import type {
+    PrismaClient,
+    Project as ProjectType,
+    Prisma,
+} from "../../../prisma/generated/client";
 
 export class Project {
     private prisma: PrismaClient = prisma;
@@ -10,10 +13,13 @@ export class Project {
 
     private cachedProject: ProjectType | null = null;
 
-    constructor(userId: number, {
-        projectId = null,
-        projectName = null,
-    }: { projectId?: number | null; projectName?: string | null } = {}) {
+    constructor(
+        userId: number,
+        {
+            projectId = null,
+            projectName = null,
+        }: { projectId?: number | null; projectName?: string | null } = {},
+    ) {
         this.userId = userId;
         this.projectId = projectId;
         this.projectName = projectName;
@@ -40,14 +46,10 @@ export class Project {
 
             if (!project) throw new Error("Project not found");
 
-            // Check Permission
-            const canRead = await PermissionService.check(this.userId, "project:read", "Project", project.id);
-            if (!canRead) throw new Error("Permission denied");
-
             this.cachedProject = project;
             // Ensure ID is set if we fetched by name
             this.projectId = project.id;
-            
+
             return project;
         } catch (error: any) {
             if (error.message === "Permission denied") throw error;
@@ -64,27 +66,8 @@ export class Project {
         path: string;
         metaData?: any;
     }): Promise<ProjectType> {
-        // Check Global Permission (e.g. "project:create" on System)
-        // Or we assume anyone can create a project?
-        // Let's enforce "project:create" on System level.
-        const canCreate = await PermissionService.check(this.userId, "project:create", "System", 0);
-        if (!canCreate) throw new Error("Permission denied: Cannot create project");
-
         try {
             const project = await this.prisma.project.create({ data });
-            
-            // Auto-assign Owner Role to the creator
-            const ownerRole = await this.prisma.role.findFirst({ where: { name: "Owner", projectId: null } });
-            if (ownerRole) {
-                await this.prisma.userGrant.create({
-                    data: {
-                        userId: this.userId,
-                        roleId: ownerRole.id,
-                        resourceType: "Project",
-                        resourceId: project.id
-                    }
-                });
-            }
 
             this.projectId = project.id;
             this.projectName = project.name;
@@ -98,16 +81,15 @@ export class Project {
     /**
      * Update project fields
      */
-    async update(data: Prisma.ProjectUncheckedUpdateInput): Promise<ProjectType> {
+    async update(
+        data: Prisma.ProjectUncheckedUpdateInput,
+    ): Promise<ProjectType> {
         if (!this.projectId && !this.projectName) {
             throw new Error("Project ID or Name must be set");
         }
 
-        // Ensure we have the ID to check permission
+        // Ensure we have the ID
         if (!this.projectId) await this.get();
-
-        const canUpdate = await PermissionService.check(this.userId, "project:update", "Project", this.projectId!);
-        if (!canUpdate) throw new Error("Permission denied");
 
         try {
             const project = await this.prisma.project.update({
@@ -134,11 +116,8 @@ export class Project {
             throw new Error("Project ID or Name must be set");
         }
 
-        // Ensure we have the ID to check permission
+        // Ensure we have the ID
         if (!this.projectId) await this.get();
-
-        const canDelete = await PermissionService.check(this.userId, "project:delete", "Project", this.projectId!);
-        if (!canDelete) throw new Error("Permission denied");
 
         try {
             await this.prisma.project.delete({
@@ -154,7 +133,6 @@ export class Project {
         }
     }
 }
-
 
 export class Projects {
     private prisma: PrismaClient = prisma;
@@ -200,31 +178,7 @@ export class Projects {
         } = options;
         const skip = (page - 1) * pageSize;
 
-        // Filter by Permission: User must have "project:read" on the project.
-        // This is complex to do in a single query without a join on UserGrant.
-        // Strategy:
-        // 1. Find all Project IDs where user has a grant (Direct or via Role).
-        // 2. Or if user is Super Admin, they see all.
-        
-        const isSuperAdmin = await PermissionService.check(this.userId, "*", "System", 0);
-        
-        let permissionWhere: any = {};
-
-        if (!isSuperAdmin) {
-            // Find grants for this user on Projects
-            const grants = await this.prisma.userGrant.findMany({
-                where: {
-                    userId: this.userId,
-                    resourceType: "Project"
-                },
-                select: { resourceId: true }
-            });
-            const projectIds = grants.map(g => g.resourceId);
-            permissionWhere = { id: { in: projectIds } };
-        }
-
         const where = {
-            ...permissionWhere,
             ...(filters.name && { name: { contains: filters.name } }),
             ...(filters.ownerId && { ownerId: filters.ownerId }),
             ...(filters.path && { path: { contains: filters.path } }),
