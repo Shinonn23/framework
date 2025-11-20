@@ -21,7 +21,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Home() {
     return (
-        <ScrollArea className="h-[calc(100vh-1rem)] pb-12">
+        <ScrollArea className="h-[calc(100vh-4.975rem)] pb-12">
             <div className="flex min-h-screen flex-col items-center justify-between p-8">
                 <div className="container max-w-6xl">
                     <div className="flex flex-col items-center text-center mb-12 mt-8">
