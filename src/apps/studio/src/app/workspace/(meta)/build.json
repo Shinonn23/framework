@@ -32,7 +32,7 @@
             "layout": { "x": 0, "y": 6, "w": 3 },
             "props": {
                 "label": "DocType",
-                "icon": "FileText",
+
                 "href": "/workspace/doctype"
             }
         },
@@ -42,7 +42,7 @@
             "layout": { "x": 3, "y": 6, "w": 3 },
             "props": {
                 "label": "Customize Form",
-                "icon": "Paintbrush",
+
                 "href": "/workspace/customize-form"
             }
         },
@@ -52,7 +52,7 @@
             "layout": { "x": 6, "y": 6, "w": 3 },
             "props": {
                 "label": "Report",
-                "icon": "BarChart3",
+
                 "href": "/workspace/report"
             }
         },
@@ -62,7 +62,7 @@
             "layout": { "x": 9, "y": 6, "w": 3 },
             "props": {
                 "label": "Client Script",
-                "icon": "Code",
+
                 "href": "/workspace/client-script"
             }
         },
@@ -72,7 +72,7 @@
             "layout": { "x": 0, "y": 9, "w": 3 },
             "props": {
                 "label": "Server Script",
-                "icon": "Server",
+
                 "href": "/workspace/server-script"
             }
         },
@@ -82,7 +82,7 @@
             "layout": { "x": 3, "y": 9, "w": 3 },
             "props": {
                 "label": "Print Format Builder",
-                "icon": "Printer",
+
                 "href": "/workspace/print-format"
             }
         },
@@ -92,7 +92,7 @@
             "layout": { "x": 6, "y": 9, "w": 3 },
             "props": {
                 "label": "System Settings",
-                "icon": "Settings",
+
                 "href": "/workspace/system-settings"
             }
         },
@@ -125,12 +125,12 @@
                 "items": [
                     {
                         "label": "DocType",
-                        "icon": "FileText",
+
                         "href": "/workspace/models/doctype"
                     },
                     {
                         "label": "Workflow",
-                        "icon": "Workflow",
+
                         "href": "/workspace/models/workflow"
                     }
                 ]
@@ -146,27 +146,27 @@
                 "items": [
                     {
                         "label": "Report",
-                        "icon": "BarChart3",
+
                         "href": "/workspace/views/report"
                     },
                     {
                         "label": "Print Format",
-                        "icon": "Printer",
+
                         "href": "/workspace/views/print-format"
                     },
                     {
                         "label": "Workspace",
-                        "icon": "LayoutDashboard",
+
                         "href": "/workspace/views/workspace"
                     },
                     {
                         "label": "Dashboard",
-                        "icon": "LineChart",
+
                         "href": "/workspace/views/dashboard"
                     },
                     {
                         "label": "Dashboard Chart",
-                        "icon": "PieChart",
+
                         "href": "/workspace/views/dashboard-chart"
                     }
                 ]
@@ -182,22 +182,22 @@
                 "items": [
                     {
                         "label": "Customize Form",
-                        "icon": "Paintbrush",
+
                         "href": "/workspace/customization/customize-form"
                     },
                     {
                         "label": "Custom Field",
-                        "icon": "Edit3",
+
                         "href": "/workspace/customization/custom-field"
                     },
                     {
                         "label": "Custom Translation",
-                        "icon": "Languages",
+
                         "href": "/workspace/customization/custom-translation"
                     },
                     {
                         "label": "Navbar Settings",
-                        "icon": "Menu",
+
                         "href": "/workspace/customization/navbar-settings"
                     }
                 ]
@@ -213,17 +213,17 @@
                 "items": [
                     {
                         "label": "Server Script",
-                        "icon": "Server",
+
                         "href": "/workspace/scripting/server-script"
                     },
                     {
                         "label": "Client Script",
-                        "icon": "Code",
+
                         "href": "/workspace/scripting/client-script"
                     },
                     {
                         "label": "Scheduled Job Type",
-                        "icon": "Clock",
+
                         "href": "/workspace/scripting/scheduled-job-type"
                     }
                 ]
@@ -239,12 +239,12 @@
                 "items": [
                     {
                         "label": "Module Def",
-                        "icon": "Package",
+
                         "href": "/workspace/modules/module-def"
                     },
                     {
                         "label": "Module Onboarding",
-                        "icon": "Target",
+
                         "href": "/workspace/modules/module-onboarding"
                     }
                 ]
@@ -260,12 +260,12 @@
                 "items": [
                     {
                         "label": "Package",
-                        "icon": "Package",
+
                         "href": "/workspace/packages/package"
                     },
                     {
                         "label": "Package Import",
-                        "icon": "Download",
+
                         "href": "/workspace/packages/package-import"
                     }
                 ]
@@ -281,27 +281,27 @@
                 "items": [
                     {
                         "label": "Background Jobs",
-                        "icon": "Settings",
+
                         "href": "/workspace/logs/background-jobs"
                     },
                     {
                         "label": "Scheduled Jobs Logs",
-                        "icon": "Calendar",
+
                         "href": "/workspace/logs/scheduled-jobs"
                     },
                     {
                         "label": "Error Logs",
-                        "icon": "AlertCircle",
+
                         "href": "/workspace/logs/error-logs"
                     },
                     {
                         "label": "Communication Logs",
-                        "icon": "MessageSquare",
+
                         "href": "/workspace/logs/communication-logs"
                     },
                     {
                         "label": "Activity Log",
-                        "icon": "Activity",
+
                         "href": "/workspace/logs/activity-log"
                     }
                 ]

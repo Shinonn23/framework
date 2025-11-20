@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import React, { useState } from "react";
 import {
     WorkspaceComponent,
@@ -29,7 +27,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { IconPicker } from "./icon-picker";
+import { IconPicker, IconName } from "@/components/ui/icon-picker";
 import { Trash2, Plus } from "lucide-react";
 
 // Base Dialog Props
@@ -231,7 +229,10 @@ export function CardEditDialog({
 
                     <div className="space-y-2">
                         <Label>Icon (Optional)</Label>
-                        <IconPicker value={icon} onSelect={setIcon} />
+                        <IconPicker
+                            value={icon as IconName}
+                            onValueChange={setIcon}
+                        />
                     </div>
                 </div>
 
@@ -296,7 +297,10 @@ export function ShortcutEditDialog({
 
                     <div className="space-y-2">
                         <Label>Icon (Optional)</Label>
-                        <IconPicker value={icon} onSelect={setIcon} />
+                        <IconPicker
+                            value={icon as IconName}
+                            onValueChange={setIcon}
+                        />
                     </div>
                 </div>
 
@@ -489,8 +493,8 @@ export function QuicklistEditDialog({
                                     />
 
                                     <IconPicker
-                                        value={item.icon}
-                                        onSelect={(iconName) =>
+                                        value={item.icon as IconName}
+                                        onValueChange={(iconName: IconName) =>
                                             updateItem(index, "icon", iconName)
                                         }
                                     />

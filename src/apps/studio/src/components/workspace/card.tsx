@@ -5,7 +5,7 @@ import {
     CardTitle,
     CardDescription,
 } from "@/components/ui/card";
-import { ChartArea } from "lucide-react";
+import { Icon, IconName } from "@/components/ui/icon-picker";
 
 interface WorkspaceCardProps {
     title: string;
@@ -20,7 +20,7 @@ const WorkspaceCard = React.forwardRef<HTMLDivElement, WorkspaceCardProps>(
                 <CardHeader>
                     {icon && (
                         <div className="text-2xl mb-2" aria-label={icon}>
-                            <ChartArea />
+                            <Icon name={icon as IconName} className="h-6 w-6" />
                         </div>
                     )}
                     <CardTitle className="truncate">{title}</CardTitle>
