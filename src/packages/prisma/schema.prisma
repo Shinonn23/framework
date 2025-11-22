@@ -15,21 +15,6 @@ datasource db {
     provider = "sqlite"
 }
 
-// --- Entities ---
-
-model User {
-    id        Int      @id @default(autoincrement())
-    username  String   @unique
-    email     String   @unique
-    password  String
-    metaData  Json?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Relations
-    ownedProjects Project[]   @relation("ProjectOwner")
-}
-
 model Project {
     id        Int      @id @default(autoincrement())
     name      String   @unique
@@ -38,61 +23,4 @@ model Project {
     metaData  Json?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-
-    // Relations
-    owner   User     @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-    modules Module[]
-}
-
-model Module {
-    id        Int      @id @default(autoincrement())
-    name      String
-    projectId Int
-    metaData  Json?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Relations
-    project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    workspaces Workspace[]
-    documents  Document[]
-    reports    Report[]
-}
-
-model Workspace {
-    id        Int      @id @default(autoincrement())
-    name      String
-    moduleId  Int
-    metaData  Json?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Relations
-    module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-}
-
-model Document {
-    id        Int      @id @default(autoincrement())
-    name      String
-    moduleId  Int
-    content   String?
-    metaData  Json?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Relations
-    module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-}
-
-model Report {
-    id        Int      @id @default(autoincrement())
-    name      String
-    moduleId  Int
-    content   String?
-    metaData  Json?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Relations
-    module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 }

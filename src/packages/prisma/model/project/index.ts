@@ -1,9 +1,9 @@
-import { prisma } from "../../../prisma";
+import { prisma } from "@/prisma";
 import type {
     PrismaClient,
     Project as ProjectType,
     Prisma,
-} from "../../../prisma/generated/client";
+} from "@/prisma/generated/client";
 
 export class Project {
     private prisma: PrismaClient = prisma;

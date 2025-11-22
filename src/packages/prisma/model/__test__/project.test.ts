@@ -11,17 +11,8 @@ describe("Project Class", () => {
         await prisma.project.deleteMany({
             where: { name: { startsWith: "test-project" } },
         });
-        await prisma.user.deleteMany({
-            where: { username: { startsWith: "test-user" } },
-        });
 
-        testUser = await prisma.user.create({
-            data: {
-                username: "test-user",
-                email: "test@example.com",
-                password: "password",
-            },
-        });
+        testUser = { id: 1 };
 
         // Create a test project
         // We use the Project class to create it to ensure permissions are checked/assigned
@@ -38,9 +29,6 @@ describe("Project Class", () => {
         // Clean up test data
         await prisma.project.deleteMany({
             where: { name: { startsWith: "test-project" } },
-        });
-        await prisma.user.deleteMany({
-            where: { username: { startsWith: "test-user" } },
         });
     });
 
@@ -170,13 +158,7 @@ describe("Project Class", () => {
             const project = new Project(testUser.id, {
                 projectId: testProject.id,
             });
-            const newUser = await prisma.user.create({
-                data: {
-                    username: "updated-owner-" + Date.now(),
-                    email: "updated-" + Date.now() + "@example.com",
-                    password: "password",
-                },
-            });
+            const newUser = { id: 2 };
             const result = await project.update({
                 ownerId: newUser.id,
                 path: "/updated/path",
@@ -191,13 +173,7 @@ describe("Project Class", () => {
             const project = new Project(testUser.id, {
                 projectName: "test-project-1",
             });
-            const newUser = await prisma.user.create({
-                data: {
-                    username: "updated-owner-2-" + Date.now(),
-                    email: "updated2-" + Date.now() + "@example.com",
-                    password: "password",
-                },
-            });
+            const newUser = { id: 3 };
             const result = await project.update({
                 ownerId: newUser.id,
             });
@@ -211,13 +187,7 @@ describe("Project Class", () => {
             });
             await project.get(); // Cache the project
 
-            const newUser = await prisma.user.create({
-                data: {
-                    username: "cached-owner-" + Date.now(),
-                    email: "cached-" + Date.now() + "@example.com",
-                    password: "password",
-                },
-            });
+            const newUser = { id: 4 };
 
             const updated = await project.update({ ownerId: newUser.id });
             const fetched = await project.get();
@@ -320,25 +290,9 @@ describe("Projects Class", () => {
         await prisma.project.deleteMany({
             where: { name: { startsWith: "test-list-" } },
         });
-        await prisma.user.deleteMany({
-            where: { username: { startsWith: "owner-" } },
-        });
 
-        ownerA = await prisma.user.create({
-            data: {
-                username: "owner-a",
-                email: "owner-a@example.com",
-                password: "password",
-            },
-        });
-
-        ownerB = await prisma.user.create({
-            data: {
-                username: "owner-b",
-                email: "owner-b@example.com",
-                password: "password",
-            },
-        });
+        ownerA = { id: 10 };
+        ownerB = { id: 11 };
 
         // Create multiple test projects using Project class to ensure grants
         const p1 = new Project(ownerA.id);
@@ -366,9 +320,6 @@ describe("Projects Class", () => {
     afterEach(async () => {
         await prisma.project.deleteMany({
             where: { name: { startsWith: "test-list-" } },
-        });
-        await prisma.user.deleteMany({
-            where: { username: { startsWith: "owner-" } },
         });
     });
 
